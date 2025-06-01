@@ -27,8 +27,10 @@ jobs:
           ref: ${{ matrix.ref }}
 
       - name: Set up Herd Lite (PHP 8.3)
+        env:
+          TERM: xterm
+          PHP_VERSION: 8.3
         run: |
-          export PHP_VERSION=8.3
           curl -sSL https://php.new/install/linux | bash
 
       - name: Add Herd binaries to PATH
