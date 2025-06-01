@@ -1,0 +1,10 @@
+includes:
+	- phpstan-baseline.neon
+parameters:
+    tmpDir: tmp
+    treatPhpDocTypesAsCertain: false
+    level: 8
+    scanFiles:
+        - ./_ide_helper_models.php
+    paths:
+        - app
