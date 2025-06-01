@@ -13,10 +13,11 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        name: [pr-tip, target-branch]
-        ref:
-          - ${{ github.head_ref }}
-          - ${{ github.event.pull_request.base.ref }}
+        include:
+          - name: pr-tip
+            ref: ${{ github.head_ref }}
+          - name: target-branch
+            ref: ${{ github.event.pull_request.base.ref }}
     outputs:
       pr-tip-phpstan-json: ${{ steps.emit-pr-tip-json.outputs.pr-tip-json }}
       target-branch-phpstan-json: ${{ steps.emit-target-json.outputs.target-branch-json }}
