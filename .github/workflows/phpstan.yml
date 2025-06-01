@@ -116,22 +116,22 @@ jobs:
 
       - name: Generate introduced-errors.json
         run: |
-          jq --argfile pr pr-tip-phpstan.json \
-             --argfile base target-branch-phpstan.json \
+          jq --slurpfile pr pr-tip-phpstan.json \
+             --slurpfile base target-branch-phpstan.json \
              -n '
-             ($pr.files | to_entries
-                | map(select( ( $base.files | has(.key) ) | not ))
-                | from_entries
+             ($pr[0].files    | to_entries
+               | map(select(( $base[0].files | has(.key) ) | not))
+               | from_entries
              )' > introduced-errors.json
 
       - name: Generate removed-errors.json
         run: |
-          jq --argfile pr pr-tip-phpstan.json \
-             --argfile base target-branch-phpstan.json \
+          jq --slurpfile pr pr-tip-phpstan.json \
+             --slurpfile base target-branch-phpstan.json \
              -n '
-             ($base.files | to_entries
-                | map(select( ( $pr.files | has(.key) ) | not ))
-                | from_entries
+             ($base[0].files  | to_entries
+               | map(select(( $pr[0].files | has(.key) ) | not))
+               | from_entries
              )' > removed-errors.json
 
       - name: Show summary of deltas
