@@ -116,23 +116,49 @@ jobs:
 
       - name: Generate introduced-errors.json
         run: |
-          jq --slurpfile pr pr-tip-phpstan.json \
-             --slurpfile base target-branch-phpstan.json \
-             -n '
-             ($pr[0].files    | to_entries
-               | map(select(( $base[0].files | has(.key) ) | not))
-               | from_entries
-             )' > introduced-errors.json
+          jq -s '
+            def errs($json):
+              $json.files
+              | to_entries
+              | map(
+                  .key as $file
+                  | .value.messages[]
+                  | { file: $file }
+                    + { message: .message, line: .line, ignorable: .ignorable, identifier: .identifier }
+                );
+
+            ( .[0] | errs(.) ) as $prErrors
+            | ( .[1] | errs(.) ) as $targetErrors
+            | $prErrors
+            | map(
+                select(
+                  ( $targetErrors | index(.) ) == null
+                )
+              )
+          ' pr-tip-phpstan.json target-branch-phpstan.json > introduced-errors.json
 
       - name: Generate removed-errors.json
         run: |
-          jq --slurpfile pr pr-tip-phpstan.json \
-             --slurpfile base target-branch-phpstan.json \
-             -n '
-             ($base[0].files  | to_entries
-               | map(select(( $pr[0].files | has(.key) ) | not))
-               | from_entries
-             )' > removed-errors.json
+          jq -s '
+            def errs($json):
+              $json.files
+              | to_entries
+              | map(
+                  .key as $file
+                  | .value.messages[]
+                  | { file: $file }
+                    + { message: .message, line: .line, ignorable: .ignorable, identifier: .identifier }
+                );
+
+            ( .[1] | errs(.) ) as $targetErrors
+            | ( .[0] | errs(.) ) as $prErrors
+            | $targetErrors
+            | map(
+                select(
+                  ( $prErrors | index(.) ) == null
+                )
+              )
+          ' pr-tip-phpstan.json target-branch-phpstan.json > removed-errors.json
 
       - name: Show summary of deltas
         run: |
