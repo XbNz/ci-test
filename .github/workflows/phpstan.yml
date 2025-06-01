@@ -21,7 +21,7 @@ jobs:
       pr-tip-phpstan-json: ${{ steps.emit-pr-tip-json.outputs.pr-tip-json }}
       target-branch-phpstan-json: ${{ steps.emit-target-json.outputs.target-branch-json }}
     steps:
-      - name: Checkout code (${{matrix.name}})
+      - name: Checkout code (${{ matrix.name }})
         uses: actions/checkout@v4
         with:
           ref: ${{ matrix.ref }}
@@ -73,7 +73,6 @@ jobs:
             --configuration=phpstan.neon \
             --error-format=json \
             > phpstan-output.json || true
-
           jq . phpstan-output.json > /dev/null
           echo "json=$(jq -c . < phpstan-output.json)" >> $GITHUB_OUTPUT
 
@@ -88,13 +87,18 @@ jobs:
         id: emit-pr-tip-json
         if: ${{ matrix.name == 'pr-tip' }}
         run: |
-          echo "pr-tip-json=${{ steps.run-phpstan.outputs.json }}" >> $GITHUB_OUTPUT
+          echo "pr-tip-json<<EOF" >> $GITHUB_OUTPUT
+          echo "${{ steps.run-phpstan.outputs.json }}" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Emit target-branch output
         id: emit-target-json
         if: ${{ matrix.name == 'target-branch' }}
         run: |
-          echo "target-branch-json=${{ steps.run-phpstan.outputs.json }}" >> $GITHUB_OUTPUT
+          echo "target-branch-json<<EOF" >> $GITHUB_OUTPUT
+          echo "${{ steps.run-phpstan.outputs.json }}" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
   compare-results:
     needs: phpstan
     runs-on: ubuntu-latest
