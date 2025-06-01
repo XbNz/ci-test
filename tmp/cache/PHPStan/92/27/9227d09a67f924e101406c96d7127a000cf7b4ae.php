@@ -38,9 +38,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/Users/ag/Documents/Projects/ci-test/app/Http/Controllers/Controller.php' => 
     array (
-      0 => 'f4afbe85426ee0213ba2e5778ae893f8ab37cf9a',
+      0 => 'a33a5105f92c73a309c9f8a549905dcdf6dccbae',
       1 => 
       array (
+        0 => 'app\\http\\controllers\\controller',
       ),
       2 => 
       array (

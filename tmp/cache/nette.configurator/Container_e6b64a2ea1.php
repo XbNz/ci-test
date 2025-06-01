@@ -1,6 +1,6 @@
 <?php
 // source: phar:///Users/ag/Documents/Projects/ci-test/vendor/phpstan/phpstan/phpstan.phar/conf/config.neon
-// source: phar:///Users/ag/Documents/Projects/ci-test/vendor/phpstan/phpstan/phpstan.phar/conf/config.level8.neon
+// source: phar:///Users/ag/Documents/Projects/ci-test/vendor/phpstan/phpstan/phpstan.phar/conf/config.level4.neon
 // source: /Users/ag/Documents/Projects/ci-test/phpstan.neon
 // source: array
 
@@ -8,7 +8,7 @@
 
 declare(strict_types=1);
 
-class Container_caad9189a2 extends _PHPStan_ac6dae9b0\Nette\DI\Container
+class Container_e6b64a2ea1 extends _PHPStan_ac6dae9b0\Nette\DI\Container
 {
 	protected $tags = [
 		'phpstan.parser.richParserNodeVisitor' => [
@@ -276,9 +276,6 @@ class Container_caad9189a2 extends _PHPStan_ac6dae9b0\Nette\DI\Container
 			'0446' => true,
 			'0447' => true,
 			'0450' => true,
-			'0451' => true,
-			'0452' => true,
-			'0453' => true,
 			'rules.0' => true,
 			'rules.1' => true,
 			'rules.10' => true,
@@ -420,20 +417,7 @@ class Container_caad9189a2 extends _PHPStan_ac6dae9b0\Nette\DI\Container
 			'rules.222' => true,
 			'rules.223' => true,
 			'rules.224' => true,
-			'rules.225' => true,
-			'rules.226' => true,
-			'rules.227' => true,
-			'rules.228' => true,
-			'rules.229' => true,
 			'rules.23' => true,
-			'rules.230' => true,
-			'rules.231' => true,
-			'rules.232' => true,
-			'rules.233' => true,
-			'rules.234' => true,
-			'rules.235' => true,
-			'rules.236' => true,
-			'rules.237' => true,
 			'rules.24' => true,
 			'rules.25' => true,
 			'rules.26' => true,
@@ -609,10 +593,6 @@ class Container_caad9189a2 extends _PHPStan_ac6dae9b0\Nette\DI\Container
 				'0446',
 				'0447',
 				'0450',
-				'0451',
-				'0452',
-				'0453',
-				'0454',
 			],
 			[
 				'rules.0',
@@ -840,19 +820,6 @@ class Container_caad9189a2 extends _PHPStan_ac6dae9b0\Nette\DI\Container
 				'rules.222',
 				'rules.223',
 				'rules.224',
-				'rules.225',
-				'rules.226',
-				'rules.227',
-				'rules.228',
-				'rules.229',
-				'rules.230',
-				'rules.231',
-				'rules.232',
-				'rules.233',
-				'rules.234',
-				'rules.235',
-				'rules.236',
-				'rules.237',
 			],
 		],
 		'PHPStan\Rules\Debug\DebugScopeRule' => [['rules.0']],
@@ -1080,19 +1047,6 @@ class Container_caad9189a2 extends _PHPStan_ac6dae9b0\Nette\DI\Container
 		'PHPStan\Rules\TooWideTypehints\TooWideMethodParameterOutTypeRule' => [['rules.222']],
 		'PHPStan\Rules\TooWideTypehints\TooWidePropertyTypeRule' => [['rules.223']],
 		'PHPStan\Rules\Traits\NotAnalysedTraitRule' => [['rules.224']],
-		'PHPStan\Rules\DateTimeInstantiationRule' => [['rules.225']],
-		'PHPStan\Rules\Functions\CallUserFuncRule' => [['rules.226']],
-		'PHPStan\Rules\Functions\ParameterCastableToStringRule' => [['rules.227']],
-		'PHPStan\Rules\Functions\ImplodeParameterCastableToStringRule' => [['rules.228']],
-		'PHPStan\Rules\Functions\SortParameterCastableToStringRule' => [['rules.229']],
-		'PHPStan\Rules\Regexp\RegularExpressionQuotingRule' => [['rules.230']],
-		'PHPStan\Rules\Constants\MissingClassConstantTypehintRule' => [['rules.231']],
-		'PHPStan\Rules\Functions\MissingFunctionParameterTypehintRule' => [['rules.232']],
-		'PHPStan\Rules\Functions\MissingFunctionReturnTypehintRule' => [['rules.233']],
-		'PHPStan\Rules\Methods\MissingMethodParameterTypehintRule' => [['rules.234']],
-		'PHPStan\Rules\Methods\MissingMethodReturnTypehintRule' => [['rules.235']],
-		'PHPStan\Rules\Methods\MissingMethodSelfOutTypeRule' => [['rules.236']],
-		'PHPStan\Rules\Properties\MissingPropertyTypehintRule' => [['rules.237']],
 		'PhpParser\BuilderFactory' => [['01']],
 		'PHPStan\Parser\LexerFactory' => [['02']],
 		'PhpParser\NodeVisitorAbstract' => [
@@ -1879,10 +1833,6 @@ class Container_caad9189a2 extends _PHPStan_ac6dae9b0\Nette\DI\Container
 		'PHPStan\Rules\Traits\TraitDeclarationCollector' => [['0448']],
 		'PHPStan\Rules\Traits\TraitUseCollector' => [['0449']],
 		'PHPStan\Rules\Exceptions\CatchWithUnthrownExceptionRule' => [['0450']],
-		'PHPStan\Rules\Functions\RandomIntParametersRule' => [['0451']],
-		'PHPStan\Rules\Functions\ArrayFilterRule' => [['0452']],
-		'PHPStan\Rules\Functions\ArrayValuesRule' => [['0453']],
-		'PHPStan\Rules\Functions\ParameterCastableToNumberRule' => [['0454']],
 	];
 
 
@@ -2353,7 +2303,7 @@ class Container_caad9189a2 extends _PHPStan_ac6dae9b0\Nette\DI\Container
 			private $container;
 
 
-			public function __construct(Container_caad9189a2 $container)
+			public function __construct(Container_e6b64a2ea1 $container)
 			{
 				$this->container = $container;
 			}
@@ -2372,7 +2322,7 @@ class Container_caad9189a2 extends _PHPStan_ac6dae9b0\Nette\DI\Container
 					$this->container->getParameter('analysedPaths'),
 					$this->container->getParameter('analysedPathsFromConfig'),
 					['/Users/ag/Documents/Projects/ci-test'],
-					'8',
+					'4',
 					null,
 					[
 						'phar:///Users/ag/Documents/Projects/ci-test/vendor/phpstan/phpstan/phpstan.phar/stubs/runtime/ReflectionUnionType.php',
@@ -2472,10 +2422,6 @@ class Container_caad9189a2 extends _PHPStan_ac6dae9b0\Nette\DI\Container
 			['/Users/ag/Documents/Projects/ci-test'],
 			[
 				'phar:///Users/ag/Documents/Projects/ci-test/vendor/phpstan/phpstan/phpstan.phar/conf/parametersSchema.neon',
-				'phar:///Users/ag/Documents/Projects/ci-test/vendor/phpstan/phpstan/phpstan.phar/conf/config.level8.neon',
-				'phar:///Users/ag/Documents/Projects/ci-test/vendor/phpstan/phpstan/phpstan.phar/conf/config.level7.neon',
-				'phar:///Users/ag/Documents/Projects/ci-test/vendor/phpstan/phpstan/phpstan.phar/conf/config.level6.neon',
-				'phar:///Users/ag/Documents/Projects/ci-test/vendor/phpstan/phpstan/phpstan.phar/conf/config.level5.neon',
 				'phar:///Users/ag/Documents/Projects/ci-test/vendor/phpstan/phpstan/phpstan.phar/conf/config.level4.neon',
 				'phar:///Users/ag/Documents/Projects/ci-test/vendor/phpstan/phpstan/phpstan.phar/conf/config.level3.neon',
 				'phar:///Users/ag/Documents/Projects/ci-test/vendor/phpstan/phpstan/phpstan.phar/conf/config.level2.neon',
@@ -2492,7 +2438,7 @@ class Container_caad9189a2 extends _PHPStan_ac6dae9b0\Nette\DI\Container
 				'phar:///Users/ag/Documents/Projects/ci-test/vendor/phpstan/phpstan/phpstan.phar/stubs/runtime/ReflectionIntersectionType.php',
 			],
 			null,
-			'8'
+			'4'
 		);
 	}
 
@@ -2548,13 +2494,13 @@ class Container_caad9189a2 extends _PHPStan_ac6dae9b0\Nette\DI\Container
 			'/Users/ag/Documents/Projects/ci-test',
 			'/Users/ag/Documents/Projects/ci-test/tmp',
 			[
-				'phar:///Users/ag/Documents/Projects/ci-test/vendor/phpstan/phpstan/phpstan.phar/conf/config.level8.neon',
+				'phar:///Users/ag/Documents/Projects/ci-test/vendor/phpstan/phpstan/phpstan.phar/conf/config.level4.neon',
 				'/Users/ag/Documents/Projects/ci-test/phpstan.neon',
 			],
 			$this->getParameter('analysedPaths'),
 			['/Users/ag/Documents/Projects/ci-test'],
 			$this->getParameter('analysedPathsFromConfig'),
-			'8',
+			'4',
 			null,
 			null,
 			$this->getParameter('singleReflectionFile'),
@@ -2623,7 +2569,7 @@ class Container_caad9189a2 extends _PHPStan_ac6dae9b0\Nette\DI\Container
 			private $container;
 
 
-			public function __construct(Container_caad9189a2 $container)
+			public function __construct(Container_e6b64a2ea1 $container)
 			{
 				$this->container = $container;
 			}
@@ -2692,7 +2638,7 @@ class Container_caad9189a2 extends _PHPStan_ac6dae9b0\Nette\DI\Container
 			private $container;
 
 
-			public function __construct(Container_caad9189a2 $container)
+			public function __construct(Container_e6b64a2ea1 $container)
 			{
 				$this->container = $container;
 			}
@@ -2818,7 +2764,7 @@ class Container_caad9189a2 extends _PHPStan_ac6dae9b0\Nette\DI\Container
 			private $container;
 
 
-			public function __construct(Container_caad9189a2 $container)
+			public function __construct(Container_e6b64a2ea1 $container)
 			{
 				$this->container = $container;
 			}
@@ -2838,7 +2784,7 @@ class Container_caad9189a2 extends _PHPStan_ac6dae9b0\Nette\DI\Container
 			private $container;
 
 
-			public function __construct(Container_caad9189a2 $container)
+			public function __construct(Container_e6b64a2ea1 $container)
 			{
 				$this->container = $container;
 			}
@@ -2942,7 +2888,7 @@ class Container_caad9189a2 extends _PHPStan_ac6dae9b0\Nette\DI\Container
 			private $container;
 
 
-			public function __construct(Container_caad9189a2 $container)
+			public function __construct(Container_e6b64a2ea1 $container)
 			{
 				$this->container = $container;
 			}
@@ -3126,7 +3072,7 @@ class Container_caad9189a2 extends _PHPStan_ac6dae9b0\Nette\DI\Container
 
 	public function createService0131(): PHPStan\Rules\Arrays\NonexistentOffsetInArrayDimFetchCheck
 	{
-		return new PHPStan\Rules\Arrays\NonexistentOffsetInArrayDimFetchCheck($this->getService('0182'), true, false, false);
+		return new PHPStan\Rules\Arrays\NonexistentOffsetInArrayDimFetchCheck($this->getService('0182'), false, false, false);
 	}
 
 
@@ -3163,7 +3109,7 @@ class Container_caad9189a2 extends _PHPStan_ac6dae9b0\Nette\DI\Container
 			$this->getService('0132'),
 			$this->getService('0170'),
 			$this->getService('0153'),
-			true,
+			false,
 			true,
 			true
 		);
@@ -3179,7 +3125,7 @@ class Container_caad9189a2 extends _PHPStan_ac6dae9b0\Nette\DI\Container
 			$this->getService('0164'),
 			$this->getService('0170'),
 			true,
-			true,
+			false,
 			true
 		);
 	}
@@ -3194,7 +3140,7 @@ class Container_caad9189a2 extends _PHPStan_ac6dae9b0\Nette\DI\Container
 			$this->getService('0164'),
 			$this->getService('0170'),
 			true,
-			true,
+			false,
 			true
 		);
 	}
@@ -3209,7 +3155,7 @@ class Container_caad9189a2 extends _PHPStan_ac6dae9b0\Nette\DI\Container
 			$this->getService('0164'),
 			$this->getService('0170'),
 			true,
-			true,
+			false,
 			true
 		);
 	}
@@ -3275,10 +3221,10 @@ class Container_caad9189a2 extends _PHPStan_ac6dae9b0\Nette\DI\Container
 			$this->getService('0165'),
 			$this->getService('0170'),
 			$this->getService('0180'),
+			false,
+			false,
 			true,
-			true,
-			true,
-			true
+			false
 		);
 	}
 
@@ -3322,7 +3268,7 @@ class Container_caad9189a2 extends _PHPStan_ac6dae9b0\Nette\DI\Container
 			$this->getService('0156'),
 			$this->getService('0170'),
 			[],
-			true
+			false
 		);
 	}
 
@@ -3451,7 +3397,7 @@ class Container_caad9189a2 extends _PHPStan_ac6dae9b0\Nette\DI\Container
 			$this->getService('0164'),
 			$this->getService('0153'),
 			true,
-			true
+			false
 		);
 	}
 
@@ -3546,7 +3492,16 @@ class Container_caad9189a2 extends _PHPStan_ac6dae9b0\Nette\DI\Container
 
 	public function createService0182(): PHPStan\Rules\RuleLevelHelper
 	{
-		return new PHPStan\Rules\RuleLevelHelper($this->getService('reflectionProvider'), true, false, true, false, false, false, true);
+		return new PHPStan\Rules\RuleLevelHelper(
+			$this->getService('reflectionProvider'),
+			false,
+			false,
+			false,
+			false,
+			false,
+			false,
+			true
+		);
 	}
 
 
@@ -4684,7 +4639,7 @@ class Container_caad9189a2 extends _PHPStan_ac6dae9b0\Nette\DI\Container
 			private $container;
 
 
-			public function __construct(Container_caad9189a2 $container)
+			public function __construct(Container_e6b64a2ea1 $container)
 			{
 				$this->container = $container;
 			}
@@ -4945,7 +4900,7 @@ class Container_caad9189a2 extends _PHPStan_ac6dae9b0\Nette\DI\Container
 			$this->getService('0182'),
 			$this->getService('026'),
 			false,
-			true
+			false
 		);
 	}
 
@@ -4958,7 +4913,7 @@ class Container_caad9189a2 extends _PHPStan_ac6dae9b0\Nette\DI\Container
 
 	public function createService0390(): PHPStan\Rules\Properties\SetPropertyHookParameterRule
 	{
-		return new PHPStan\Rules\Properties\SetPropertyHookParameterRule($this->getService('0164'), true, true);
+		return new PHPStan\Rules\Properties\SetPropertyHookParameterRule($this->getService('0164'), true, false);
 	}
 
 
@@ -5051,7 +5006,7 @@ class Container_caad9189a2 extends _PHPStan_ac6dae9b0\Nette\DI\Container
 
 	public function createService0403(): PHPStan\Rules\Functions\CallCallablesRule
 	{
-		return new PHPStan\Rules\Functions\CallCallablesRule($this->getService('0147'), $this->getService('0182'), true);
+		return new PHPStan\Rules\Functions\CallCallablesRule($this->getService('0147'), $this->getService('0182'), false);
 	}
 
 
@@ -5071,7 +5026,7 @@ class Container_caad9189a2 extends _PHPStan_ac6dae9b0\Nette\DI\Container
 			$this->getService('0164'),
 			$this->getService('0170'),
 			true,
-			true,
+			false,
 			true
 		);
 	}
@@ -5097,19 +5052,23 @@ class Container_caad9189a2 extends _PHPStan_ac6dae9b0\Nette\DI\Container
 
 	public function createService0409(): PHPStan\Rules\Arrays\InvalidKeyInArrayDimFetchRule
 	{
-		return new PHPStan\Rules\Arrays\InvalidKeyInArrayDimFetchRule($this->getService('0182'), true);
+		return new PHPStan\Rules\Arrays\InvalidKeyInArrayDimFetchRule($this->getService('0182'), false);
 	}
 
 
 	public function createService0410(): PHPStan\Rules\Arrays\InvalidKeyInArrayItemRule
 	{
-		return new PHPStan\Rules\Arrays\InvalidKeyInArrayItemRule(true);
+		return new PHPStan\Rules\Arrays\InvalidKeyInArrayItemRule(false);
 	}
 
 
 	public function createService0411(): PHPStan\Rules\Arrays\NonexistentOffsetInArrayDimFetchRule
 	{
-		return new PHPStan\Rules\Arrays\NonexistentOffsetInArrayDimFetchRule($this->getService('0182'), $this->getService('0131'), true);
+		return new PHPStan\Rules\Arrays\NonexistentOffsetInArrayDimFetchRule(
+			$this->getService('0182'),
+			$this->getService('0131'),
+			false
+		);
 	}
 
 
@@ -5142,13 +5101,13 @@ class Container_caad9189a2 extends _PHPStan_ac6dae9b0\Nette\DI\Container
 
 	public function createService0415(): PHPStan\Rules\Generators\YieldFromTypeRule
 	{
-		return new PHPStan\Rules\Generators\YieldFromTypeRule($this->getService('0182'), true);
+		return new PHPStan\Rules\Generators\YieldFromTypeRule($this->getService('0182'), false);
 	}
 
 
 	public function createService0416(): PHPStan\Rules\Generators\YieldInGeneratorRule
 	{
-		return new PHPStan\Rules\Generators\YieldInGeneratorRule(true);
+		return new PHPStan\Rules\Generators\YieldInGeneratorRule(false);
 	}
 
 
@@ -5356,37 +5315,6 @@ class Container_caad9189a2 extends _PHPStan_ac6dae9b0\Nette\DI\Container
 	}
 
 
-	public function createService0451(): PHPStan\Rules\Functions\RandomIntParametersRule
-	{
-		return new PHPStan\Rules\Functions\RandomIntParametersRule(
-			$this->getService('reflectionProvider'),
-			$this->getService('026'),
-			true
-		);
-	}
-
-
-	public function createService0452(): PHPStan\Rules\Functions\ArrayFilterRule
-	{
-		return new PHPStan\Rules\Functions\ArrayFilterRule($this->getService('reflectionProvider'), false, true);
-	}
-
-
-	public function createService0453(): PHPStan\Rules\Functions\ArrayValuesRule
-	{
-		return new PHPStan\Rules\Functions\ArrayValuesRule($this->getService('reflectionProvider'), false, true);
-	}
-
-
-	public function createService0454(): PHPStan\Rules\Functions\ParameterCastableToNumberRule
-	{
-		return new PHPStan\Rules\Functions\ParameterCastableToNumberRule(
-			$this->getService('reflectionProvider'),
-			$this->getService('0150')
-		);
-	}
-
-
 	public function createServiceBetterReflectionProvider(): PHPStan\Reflection\BetterReflection\BetterReflectionProvider
 	{
 		return new PHPStan\Reflection\BetterReflection\BetterReflectionProvider(
@@ -5430,7 +5358,7 @@ class Container_caad9189a2 extends _PHPStan_ac6dae9b0\Nette\DI\Container
 	}
 
 
-	public function createServiceContainer(): Container_caad9189a2
+	public function createServiceContainer(): Container_e6b64a2ea1
 	{
 		return $this;
 	}
@@ -5653,10 +5581,6 @@ class Container_caad9189a2 extends _PHPStan_ac6dae9b0\Nette\DI\Container
 			['/Users/ag/Documents/Projects/ci-test'],
 			[
 				'phar:///Users/ag/Documents/Projects/ci-test/vendor/phpstan/phpstan/phpstan.phar/conf/parametersSchema.neon',
-				'phar:///Users/ag/Documents/Projects/ci-test/vendor/phpstan/phpstan/phpstan.phar/conf/config.level8.neon',
-				'phar:///Users/ag/Documents/Projects/ci-test/vendor/phpstan/phpstan/phpstan.phar/conf/config.level7.neon',
-				'phar:///Users/ag/Documents/Projects/ci-test/vendor/phpstan/phpstan/phpstan.phar/conf/config.level6.neon',
-				'phar:///Users/ag/Documents/Projects/ci-test/vendor/phpstan/phpstan/phpstan.phar/conf/config.level5.neon',
 				'phar:///Users/ag/Documents/Projects/ci-test/vendor/phpstan/phpstan/phpstan.phar/conf/config.level4.neon',
 				'phar:///Users/ag/Documents/Projects/ci-test/vendor/phpstan/phpstan/phpstan.phar/conf/config.level3.neon',
 				'phar:///Users/ag/Documents/Projects/ci-test/vendor/phpstan/phpstan/phpstan.phar/conf/config.level2.neon',
@@ -6572,96 +6496,9 @@ class Container_caad9189a2 extends _PHPStan_ac6dae9b0\Nette\DI\Container
 	}
 
 
-	public function createServiceRules__225(): PHPStan\Rules\DateTimeInstantiationRule
-	{
-		return new PHPStan\Rules\DateTimeInstantiationRule;
-	}
-
-
-	public function createServiceRules__226(): PHPStan\Rules\Functions\CallUserFuncRule
-	{
-		return new PHPStan\Rules\Functions\CallUserFuncRule($this->getService('reflectionProvider'), $this->getService('0147'));
-	}
-
-
-	public function createServiceRules__227(): PHPStan\Rules\Functions\ParameterCastableToStringRule
-	{
-		return new PHPStan\Rules\Functions\ParameterCastableToStringRule(
-			$this->getService('reflectionProvider'),
-			$this->getService('0150')
-		);
-	}
-
-
-	public function createServiceRules__228(): PHPStan\Rules\Functions\ImplodeParameterCastableToStringRule
-	{
-		return new PHPStan\Rules\Functions\ImplodeParameterCastableToStringRule(
-			$this->getService('reflectionProvider'),
-			$this->getService('0150')
-		);
-	}
-
-
-	public function createServiceRules__229(): PHPStan\Rules\Functions\SortParameterCastableToStringRule
-	{
-		return new PHPStan\Rules\Functions\SortParameterCastableToStringRule(
-			$this->getService('reflectionProvider'),
-			$this->getService('0150')
-		);
-	}
-
-
 	public function createServiceRules__23(): PHPStan\Rules\Api\ApiTraitUseRule
 	{
 		return new PHPStan\Rules\Api\ApiTraitUseRule($this->getService('0129'), $this->getService('reflectionProvider'));
-	}
-
-
-	public function createServiceRules__230(): PHPStan\Rules\Regexp\RegularExpressionQuotingRule
-	{
-		return new PHPStan\Rules\Regexp\RegularExpressionQuotingRule($this->getService('reflectionProvider'), $this->getService('0280'));
-	}
-
-
-	public function createServiceRules__231(): PHPStan\Rules\Constants\MissingClassConstantTypehintRule
-	{
-		return new PHPStan\Rules\Constants\MissingClassConstantTypehintRule($this->getService('0164'));
-	}
-
-
-	public function createServiceRules__232(): PHPStan\Rules\Functions\MissingFunctionParameterTypehintRule
-	{
-		return new PHPStan\Rules\Functions\MissingFunctionParameterTypehintRule($this->getService('0164'));
-	}
-
-
-	public function createServiceRules__233(): PHPStan\Rules\Functions\MissingFunctionReturnTypehintRule
-	{
-		return new PHPStan\Rules\Functions\MissingFunctionReturnTypehintRule($this->getService('0164'));
-	}
-
-
-	public function createServiceRules__234(): PHPStan\Rules\Methods\MissingMethodParameterTypehintRule
-	{
-		return new PHPStan\Rules\Methods\MissingMethodParameterTypehintRule($this->getService('0164'));
-	}
-
-
-	public function createServiceRules__235(): PHPStan\Rules\Methods\MissingMethodReturnTypehintRule
-	{
-		return new PHPStan\Rules\Methods\MissingMethodReturnTypehintRule($this->getService('0164'));
-	}
-
-
-	public function createServiceRules__236(): PHPStan\Rules\Methods\MissingMethodSelfOutTypeRule
-	{
-		return new PHPStan\Rules\Methods\MissingMethodSelfOutTypeRule($this->getService('0164'));
-	}
-
-
-	public function createServiceRules__237(): PHPStan\Rules\Properties\MissingPropertyTypehintRule
-	{
-		return new PHPStan\Rules\Properties\MissingPropertyTypehintRule($this->getService('0164'));
 	}
 
 
@@ -7281,29 +7118,29 @@ class Container_caad9189a2 extends _PHPStan_ac6dae9b0\Nette\DI\Container
 			'checkClassCaseSensitivity' => true,
 			'checkExplicitMixed' => false,
 			'checkImplicitMixed' => false,
-			'checkFunctionArgumentTypes' => true,
+			'checkFunctionArgumentTypes' => false,
 			'checkFunctionNameCase' => false,
 			'checkInternalClassCaseSensitivity' => false,
 			'checkMissingCallableSignature' => false,
-			'checkMissingVarTagTypehint' => true,
-			'checkArgumentsPassedByReference' => true,
+			'checkMissingVarTagTypehint' => false,
+			'checkArgumentsPassedByReference' => false,
 			'checkMaybeUndefinedVariables' => true,
-			'checkNullables' => true,
+			'checkNullables' => false,
 			'checkThisOnly' => false,
-			'checkUnionTypes' => true,
+			'checkUnionTypes' => false,
 			'checkBenevolentUnionTypes' => false,
 			'checkExplicitMixedMissingReturn' => false,
 			'checkPhpDocMissingReturn' => true,
 			'checkPhpDocMethodSignatures' => true,
 			'checkExtraArguments' => true,
-			'checkMissingTypehints' => true,
+			'checkMissingTypehints' => false,
 			'checkTooWideReturnTypesInProtectedAndPublicMethods' => false,
 			'checkUninitializedProperties' => false,
 			'checkDynamicProperties' => false,
 			'strictRulesInstalled' => false,
 			'deprecationRulesInstalled' => false,
 			'inferPrivatePropertyTypeFromConstructor' => false,
-			'reportMaybes' => true,
+			'reportMaybes' => false,
 			'reportMaybesInMethodSignatures' => false,
 			'reportMaybesInPropertyPhpDocTypes' => false,
 			'reportStaticMethodSignatures' => false,
@@ -7455,15 +7292,11 @@ class Container_caad9189a2 extends _PHPStan_ac6dae9b0\Nette\DI\Container
 			'currentWorkingDirectory' => '/Users/ag/Documents/Projects/ci-test',
 			'cliArgumentsVariablesRegistered' => true,
 			'additionalConfigFiles' => [
-				'phar:///Users/ag/Documents/Projects/ci-test/vendor/phpstan/phpstan/phpstan.phar/conf/config.level8.neon',
+				'phar:///Users/ag/Documents/Projects/ci-test/vendor/phpstan/phpstan/phpstan.phar/conf/config.level4.neon',
 				'/Users/ag/Documents/Projects/ci-test/phpstan.neon',
 			],
 			'allConfigFiles' => [
 				'phar:///Users/ag/Documents/Projects/ci-test/vendor/phpstan/phpstan/phpstan.phar/conf/parametersSchema.neon',
-				'phar:///Users/ag/Documents/Projects/ci-test/vendor/phpstan/phpstan/phpstan.phar/conf/config.level8.neon',
-				'phar:///Users/ag/Documents/Projects/ci-test/vendor/phpstan/phpstan/phpstan.phar/conf/config.level7.neon',
-				'phar:///Users/ag/Documents/Projects/ci-test/vendor/phpstan/phpstan/phpstan.phar/conf/config.level6.neon',
-				'phar:///Users/ag/Documents/Projects/ci-test/vendor/phpstan/phpstan/phpstan.phar/conf/config.level5.neon',
 				'phar:///Users/ag/Documents/Projects/ci-test/vendor/phpstan/phpstan/phpstan.phar/conf/config.level4.neon',
 				'phar:///Users/ag/Documents/Projects/ci-test/vendor/phpstan/phpstan/phpstan.phar/conf/config.level3.neon',
 				'phar:///Users/ag/Documents/Projects/ci-test/vendor/phpstan/phpstan/phpstan.phar/conf/config.level2.neon',
@@ -7474,56 +7307,53 @@ class Container_caad9189a2 extends _PHPStan_ac6dae9b0\Nette\DI\Container
 			],
 			'composerAutoloaderProjectPaths' => ['/Users/ag/Documents/Projects/ci-test'],
 			'generateBaselineFile' => null,
-			'usedLevel' => '8',
+			'usedLevel' => '4',
 			'cliAutoloadFile' => null,
 			'env' => [
-				'PHPSTAN_ORIGINAL_INIS' => '/opt/homebrew/etc/php/8.4/php.ini:/opt/homebrew/etc/php/8.4/conf.d/20-pcov.ini:/opt/homebrew/etc/php/8.4/conf.d/20-xdebug.ini:/opt/homebrew/etc/php/8.4/conf.d/80-redis.ini:/opt/homebrew/etc/php/8.4/conf.d/error_log.ini:/opt/homebrew/etc/php/8.4/conf.d/ext-opcache.ini:/opt/homebrew/etc/php/8.4/conf.d/php-memory-limits.ini',
+				'XDEBUG_MODE' => 'off',
 				'TERM_PROGRAM' => 'iTerm.app',
 				'FNM_LOGLEVEL' => 'info',
 				'TERM' => 'xterm-256color',
 				'SHELL' => '/bin/zsh',
 				'FNM_NODE_DIST_MIRROR' => 'https://nodejs.org/dist',
-				'HOMEBREW_REPOSITORY' => '/opt/homebrew',
 				'TMPDIR' => '/var/folders/d7/sxc05991099dggy26xw9pdh00000gn/T/',
+				'HOMEBREW_REPOSITORY' => '/opt/homebrew',
 				'TERM_PROGRAM_VERSION' => '3.5.3',
-				'XDEBUG_HANDLER_SETTINGS' => '/private/var/folders/d7/sxc05991099dggy26xw9pdh00000gn/T/75am9nm04jcbfJGsPvm|1|*|*|/opt/homebrew/etc/php/8.4/php.ini:/opt/homebrew/etc/php/8.4/conf.d/20-pcov.ini:/opt/homebrew/etc/php/8.4/conf.d/20-xdebug.ini:/opt/homebrew/etc/php/8.4/conf.d/80-redis.ini:/opt/homebrew/etc/php/8.4/conf.d/error_log.ini:/opt/homebrew/etc/php/8.4/conf.d/ext-opcache.ini:/opt/homebrew/etc/php/8.4/conf.d/php-memory-limits.ini|3.4.3',
-				'PHPRC' => '/private/var/folders/d7/sxc05991099dggy26xw9pdh00000gn/T/75am9nm04jcbfJGsPvm',
 				'TERM_SESSION_ID' => 'w0t0p0:9BB1BBFA-F098-432C-AAF3-28AD47B238B8',
-				'LC_ALL' => 'en_US.UTF-8',
 				'ZSH' => '/Users/ag/.oh-my-zsh',
+				'LC_ALL' => 'en_US.UTF-8',
 				'FNM_COREPACK_ENABLED' => 'false',
-				'PHP_INI_SCAN_DIR' => '',
 				'USER' => 'ag',
 				'LS_COLORS' => 'di=1;36:ln=35:so=32:pi=33:ex=31:bd=34;46:cd=34;43:su=30;41:sg=30;46:tw=30;42:ow=30;43',
 				'COMMAND_MODE' => 'unix2003',
 				'SSH_AUTH_SOCK' => '/private/tmp/com.apple.launchd.fT42eidIvz/Listeners',
 				'__CF_USER_TEXT_ENCODING' => '0x1F5:0x0:0x52',
 				'TERM_FEATURES' => 'T3LrMSc7UUw9Ts3BFGsSyHNoSxF',
-				'COLUMNS' => '120',
+				'COLUMNS' => '80',
 				'PAGER' => 'less',
 				'DOTFILES' => '/Users/ag/.dotfiles',
-				'FNM_VERSION_FILE_STRATEGY' => 'local',
 				'LSCOLORS' => 'Gxfxcxdxbxegedabagacad',
-				'COMPOSER_MEMORY_LIMIT' => '-1',
+				'FNM_VERSION_FILE_STRATEGY' => 'local',
 				'FNM_ARCH' => 'arm64',
+				'COMPOSER_MEMORY_LIMIT' => '-1',
 				'TERMINFO_DIRS' => '/Applications/iTerm.app/Contents/Resources/terminfo:/usr/share/terminfo',
 				'PATH' => '/Users/ag/.spin/bin:/opt/homebrew/opt/sqlite/bin:/opt/homebrew/opt/mysql-client/bin:/opt/homebrew/opt/openssl@1.1/bin:/Users/ag/.local/state/fnm_multishells/39580_1748815446261/bin:node_modules/.bin:vendor/bin:/Users/ag/.node/bin:/Users/ag/.composer/vendor/bin:/Users/ag/.dotfiles/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/Applications/Wireshark.app/Contents/MacOS:/Applications/VMware Fusion.app/Contents/Public:/Applications/iTerm.app/Contents/Resources/utilities:/Users/ag/.composer/vendor/bin',
 				'_' => '/opt/homebrew/Cellar/php/8.4.7/bin/php',
 				'LaunchInstanceID' => 'E6BF1737-4283-4995-9BD7-05B84094A54B',
-				'__CFBundleIdentifier' => 'com.googlecode.iterm2',
+				'__CFBundleIdentifier' => 'com.jetbrains.PhpStorm',
 				'PWD' => '/Users/ag/Documents/Projects/ci-test',
 				'EDITOR' => 'subl',
 				'LANG' => 'en_US.UTF-8',
 				'ITERM_PROFILE' => 'Cobalt2 Colors',
 				'FNM_MULTISHELL_PATH' => '/Users/ag/.local/state/fnm_multishells/39580_1748815446261',
 				'XPC_FLAGS' => '0x0',
-				'LINES' => '25',
-				'XPC_SERVICE_NAME' => '0',
+				'LINES' => '50',
+				'XPC_SERVICE_NAME' => 'application.com.jetbrains.PhpStorm.30928940.142470370',
 				'SHELL_VERBOSITY' => '0',
 				'YSU_VERSION' => '1.7.3',
-				'SHLVL' => '2',
-				'HOME' => '/Users/ag',
 				'COLORFGBG' => '15;0',
+				'HOME' => '/Users/ag',
+				'SHLVL' => '2',
 				'LC_TERMINAL_VERSION' => '3.5.3',
 				'HOMEBREW_PREFIX' => '/opt/homebrew',
 				'FNM_DIR' => '/Users/ag/Library/Application Support/fnm',
