@@ -1,0 +1,167 @@
+name: Laravel Pint
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, closed]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  pint:
+    runs-on: ubuntu-latest
+    outputs:
+      pint-json: ${{ steps.emit-pint-json.outputs.pint-json }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Set up Herd Lite (PHP 8.3)
+        env:
+          TERM: xterm
+          PHP_VERSION: 8.3
+        run: |
+          curl -sSL https://php.new/install/linux | bash
+
+      - name: Add Herd binaries to PATH
+        run: echo "$HOME/.config/herd-lite/bin" >> $GITHUB_PATH
+
+      - name: Install Pint globally
+        run: |
+          composer global require laravel/pint --no-progress --no-interaction
+          BIN_DIR=$(composer global config bin-dir --absolute)
+          echo "Composer global bin directory is: $BIN_DIR"
+          echo "$BIN_DIR" >> $GITHUB_PATH
+
+      - name: Restore Pint cache (root)
+        uses: actions/cache@v4
+        with:
+          key: pint-root-${{ github.run_id }}
+          restore-keys: pint-root-
+          path: |
+            /tmp/pint-cache-root.json
+
+      - name: Run Laravel Pint (root) with JSON output
+        id: run-pint-root
+        run: |
+          echo "Running Pint (root) on ${{ github.head_ref }} vs base ${{ github.event.pull_request.base.sha }}"
+          pint --test --format=json --diff=${{ github.event.pull_request.base.sha }} \
+            --config=pint.json \
+            --cache-file=/tmp/pint-cache-root.json \
+            > pint-root-output.json || true
+
+      - name: Restore Pint cache (app-modules)
+        uses: actions/cache@v4
+        with:
+          key: pint-modules-${{ github.run_id }}
+          restore-keys: pint-modules-
+          path: |
+            /tmp/pint-cache-modules.json
+
+      - name: Run Laravel Pint (app-modules) with JSON output
+        id: run-pint-modules
+        run: |
+          echo "Running Pint (app-modules) on ${{ github.head_ref }} vs base ${{ github.event.pull_request.base.sha }}"
+          pint --test --format=json --diff=${{ github.event.pull_request.base.sha }} \
+            --config=app-modules/pint.json \
+            --cache-file=/tmp/pint-cache-modules.json \
+            > pint-modules-output.json || true
+
+      - name: Merge Pint JSON outputs
+        id: merge-pint-json
+        run: |
+          if [ ! -s pint-root-output.json ]; then
+            echo '{ "files": [] }' > pint-root-output.json
+          fi
+          if [ ! -s pint-modules-output.json ]; then
+            echo '{ "files": [] }' > pint-modules-output.json
+          fi
+
+          jq -s '{ files: (.[0].files + .[1].files) }' pint-root-output.json pint-modules-output.json \
+            > pint-output.json
+
+      - name: Emit Pint JSON output
+        id: emit-pint-json
+        run: |
+          ONE_LINE_JSON=$(jq -c . pint-output.json)
+          echo "pint-json=$ONE_LINE_JSON" >> $GITHUB_OUTPUT
+
+  comment-results:
+    needs: pint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate list of files needing fixes
+        run: |
+          jq -r '.files[].name' <<< '${{ needs.pint.outputs.pint-json }}' > files-to-fix.txt
+
+      - name: Show summary of Pint fixes
+        run: |
+          if [ ! -s files-to-fix.txt ]; then
+            echo "_No formatting issues found! 🎉_"
+          else
+            echo "Files requiring formatting fixes:"
+            cat files-to-fix.txt
+          fi
+
+      - name: Build PR comment Markdown
+        id: build-comment
+        run: |
+          if [ ! -s files-to-fix.txt ]; then
+            FIX_TABLE="_No formatting issues found! 🎉_"
+          else
+            FIX_TABLE=$(
+              {
+                echo "| File |"
+                echo "| ---- |"
+                while IFS= read -r file; do
+                  echo "| \`$file\` |"
+                done < files-to-fix.txt
+              }
+            )
+          fi
+          {
+            echo "<!-- pint-comment -->"
+            echo ""
+            echo "# Laravel Pint Results"
+            echo ""
+            echo "## 🚨 Files Needing Formatting Fixes"
+            echo ""
+            printf "%s\n" "$FIX_TABLE"
+          } > pint-comment.md
+          echo "comment-file=pint-comment.md" >> $GITHUB_OUTPUT
+
+      - name: Create or update Pint comment
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const body = fs.readFileSync('pint-comment.md', 'utf8');
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              per_page: 100
+            });
+            const marker = '<!-- pint-comment -->';
+            const existing = comments.find(c => c.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body: body
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: body
+              });
+            }
