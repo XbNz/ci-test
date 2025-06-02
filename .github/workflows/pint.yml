@@ -18,7 +18,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
+          ref: ${{ github.head_ref }}
       - name: Set up Herd Lite (PHP 8.3)
         env:
           TERM: xterm
@@ -55,6 +55,7 @@ jobs:
       - name: Run Laravel Pint with JSON output
         id: run-pint
         run: |
+          echo "Running Pint on ${{ github.head_ref }} against base commit ${{ github.event.pull_request.base.sha }}"
           ./vendor/bin/pint --test --format=json --diff=${{ github.event.pull_request.base.sha }} \
             > pint-output.json || true
 
