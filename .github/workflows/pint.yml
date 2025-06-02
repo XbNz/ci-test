@@ -19,6 +19,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref }}
+          fetch-depth: 0
       - name: Set up Herd Lite (PHP 8.3)
         env:
           TERM: xterm
@@ -102,6 +103,8 @@ jobs:
             echo "<!-- pint-comment -->"
             echo ""
             echo "# Laravel Pint Results"
+            echo ""
+            echo "## Between `${{ github.event.pull_request.base.sha }}` and `${{ github.head_ref }}`"
             echo ""
             echo "## 🚨 Files Needing Formatting Fixes"
             echo ""
