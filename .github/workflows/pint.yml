@@ -71,6 +71,7 @@ jobs:
     steps:
       - name: Generate list of files needing fixes
         run: |
+          echo ${{ needs.pint.outputs.pint-json }}
           jq -r '.files[].name' <<< '${{ needs.pint.outputs.pint-json }}' > files-to-fix.txt
 
       - name: Show summary of Pint fixes
