@@ -133,9 +133,9 @@ jobs:
             | [ ( my_keys($pr_map) - my_keys($tgt_map) )[]
                 | $pr_map[.] ]
           ' <<EOF > introduced-errors.json
-            ${{ needs.phpstan.outputs.pr-tip-phpstan-json }}
-            ${{ needs.phpstan.outputs.target-branch-phpstan-json }}
-            EOF
+          ${{ needs.phpstan.outputs.pr-tip-phpstan-json }}
+          ${{ needs.phpstan.outputs.target-branch-phpstan-json }}
+          EOF
 
       - name: Generate removed-errors.json
         run: |
@@ -169,9 +169,9 @@ jobs:
             | [ ( my_keys($tgt_map) - my_keys($pr_map) )[]
                 | $tgt_map[.] ]
           ' <<EOF > removed-errors.json
-            ${{ needs.phpstan.outputs.pr-tip-phpstan-json }}
-            ${{ needs.phpstan.outputs.target-branch-phpstan-json }}
-            EOF
+          ${{ needs.phpstan.outputs.pr-tip-phpstan-json }}
+          ${{ needs.phpstan.outputs.target-branch-phpstan-json }}
+          EOF
 
       - name: Show summary of deltas
         run: |
