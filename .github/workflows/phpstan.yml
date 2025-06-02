@@ -95,38 +95,10 @@ jobs:
     steps:
       - name: Generate introduced-errors.json
         run: |
-          jq -s \
-            'def errs($j):
-               $j.files
-               | to_entries
-               | map({file: .key} + .value.messages[])
-               | map(tojson);
-             (.[0] | errs(.)) as $pr
-             | (.[1] | errs(.)) as $base
-             | $pr
-             | map(select(index($base; .) | not))
-             | map(fromjson)' \
-            <(echo '${{ needs.phpstan.outputs.pr-tip-phpstan-json }}') \
-            <(echo '${{ needs.phpstan.outputs.target-branch-phpstan-json }}') \
-            > introduced-errors.json || true
-
+          jq -s 'def errs($j): $j.files|to_entries|map({file:.key}+ .value.messages[])|map(tojson); (.[0]|errs(.)) as $pr | (.[1]|errs(.)) as $base | $pr | map(select(index($base;.)|not))|map(fromjson)' <(echo '${{ needs.phpstan.outputs.pr-tip-phpstan-json }}') <(echo '${{ needs.phpstan.outputs.target-branch-phpstan-json }}') > introduced-errors.json || true
       - name: Generate removed-errors.json
         run: |
-          jq -s \
-            'def errs($j):
-               $j.files
-               | to_entries
-               | map({file: .key} + .value.messages[])
-               | map(tojson);
-             (.[0] | errs(.)) as $pr
-             | (.[1] | errs(.)) as $base
-             | $base
-             | map(select(index($pr; .) | not))
-             | map(fromjson)' \
-            <(echo '${{ needs.phpstan.outputs.pr-tip-phpstan-json }}') \
-            <(echo '${{ needs.phpstan.outputs.target-branch-phpstan-json }}') \
-            > removed-errors.json || true
-
+          jq -s 'def errs($j): $j.files|to_entries|map({file:.key}+ .value.messages[])|map(tojson); (.[0]|errs(.)) as $pr | (.[1]|errs(.)) as $base | $base | map(select(index($pr;.)|not))|map(fromjson)' <(echo '${{ needs.phpstan.outputs.pr-tip-phpstan-json }}') <(echo '${{ needs.phpstan.outputs.target-branch-phpstan-json }}') > removed-errors.json || true
       - name: Show summary of deltas
         run: |
           echo "Introduced files/errors:"
@@ -134,7 +106,6 @@ jobs:
           echo
           echo "Removed files/errors:"
           jq . removed-errors.json || true
-
       - name: Build PR comment Markdown
         id: build-comment
         run: |
@@ -148,7 +119,7 @@ jobs:
             fi
             echo "| File | Line | Message |"
             echo "| ---- | ----: | ------- |"
-            echo "$json_array" | jq -r '.[] | "| \(.file | gsub("\\|"; "\\\\|")) | \(.line) | \(.message | gsub("\\|"; "\\\\|")) |"'
+            echo "$json_array" | jq -r '.[] | "| \(.file|gsub(\"\\|\";\"\\\\|\")) | \(.line) | \(.message|gsub(\"\\|\";\"\\\\|\")) |"'
           }
           INTRO_TABLE=$(build_table "$INTRO")
           REMOVED_TABLE=$(build_table "$REMOVED")
@@ -168,7 +139,6 @@ jobs:
             printf "%s\n" "$REMOVED_TABLE"
           } > phpstan-comment.md
           echo "comment-file=phpstan-comment.md" >> $GITHUB_OUTPUT
-
       - name: Create or update PHPStan comment
         uses: actions/github-script@v7
         with:
