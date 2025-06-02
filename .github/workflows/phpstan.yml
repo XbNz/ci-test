@@ -126,6 +126,8 @@ jobs:
           {
             echo "<!-- phpstan-comment -->"
             echo ""
+            echo "# PHPStan Analysis Results"
+            echo ""
             echo "## ❌ Introduced Errors"
             echo ""
             printf "%s\n" "$INTRO_TABLE"
