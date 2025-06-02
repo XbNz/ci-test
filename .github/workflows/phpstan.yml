@@ -70,7 +70,7 @@ jobs:
           php vendor/bin/phpstan analyze \
             --memory-limit=2G \
             --configuration=phpstan.neon \
-            --error-format=json | tee jq -c > phpstan-output.json
+            --error-format=json | jq > phpstan-output.json
 
       - name: Save PHPStan cache
         uses: actions/cache@v4
