@@ -4,5 +4,13 @@ namespace App\Http\Controllers;
 
 aabstract class Controller
 {
-    wrong!
+    public function __constrduct()
+    {
+        
+    }
+
+    pbluic function index()
+    {
+        // This is the index method
+    }
 }
