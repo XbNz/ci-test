@@ -105,13 +105,12 @@ jobs:
       - name: Reconstruct “pr-tip” JSON file
         run: |
           printf '%s' "${{ needs.phpstan.outputs.pr-tip-phpstan-json }}" > pr-tip-phpstan.json
-
+  
       - name: Reconstruct “target-branch” JSON file
         run: |
           printf '%s' "${{ needs.phpstan.outputs.target-branch-phpstan-json }}" > target-branch-phpstan.json
 
       - name: Generate introduced-errors.json
-        shell: bash
         env:
           JQ_FILTER: |
             def errs($json):
@@ -136,11 +135,12 @@ jobs:
                   ($targetErrors | index(.)) == null
                 )
               )
+        shell: bash
         run: |
-          jq -s -f <(echo "$JQ_FILTER") pr-tip-phpstan.json target-branch-phpstan.json > introduced-errors.json
+          echo "$JQ_FILTER" > jq-filter-introduced.jq
+          jq -s -f jq-filter-introduced.jq pr-tip-phpstan.json target-branch-phpstan.json > introduced-errors.json
 
       - name: Generate removed-errors.json
-        shell: bash
         env:
           JQ_FILTER: |
             def errs($json):
@@ -165,8 +165,10 @@ jobs:
                   ($prErrors | index(.)) == null
                 )
               )
+        shell: bash
         run: |
-          jq -s -f <(echo "$JQ_FILTER") pr-tip-phpstan.json target-branch-phpstan.json > removed-errors.json
+          echo "$JQ_FILTER" > jq-filter-removed.jq
+          jq -s -f jq-filter-removed.jq pr-tip-phpstan.json target-branch-phpstan.json > removed-errors.json
 
       - name: Show summary of deltas
         run: |
