@@ -35,6 +35,10 @@ jobs:
           composer global require laravel/pint --no-progress --no-interaction
           echo "$HOME/.config/composer/vendor/bin" >> $GITHUB_PATH
 
+      - name: Pint cache directory
+        run: |
+          mkdir -p /tmp
+
       - name: Restore Pint cache
         uses: actions/cache@v4
         with:
