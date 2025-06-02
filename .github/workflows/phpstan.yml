@@ -85,6 +85,9 @@ jobs:
           echo "target-branch-json=$ONE_LINE_JSON" >> $GITHUB_OUTPUT
 
   compare-results:
+    permissions:
+      contents: write
+      pull-requests: write
     needs: phpstan
     runs-on: ubuntu-latest
     steps:
