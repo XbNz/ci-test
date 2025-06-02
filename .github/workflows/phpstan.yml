@@ -111,62 +111,12 @@ jobs:
           printf '%s' "${{ needs.phpstan.outputs.target-branch-phpstan-json }}" > target-branch-phpstan.json
 
       - name: Generate introduced-errors.json
-        shell: bash
-        env:
-          JQ_FILTER: |
-            def errs($json):
-              $json.files
-              | to_entries
-              | map(
-                  .key as $file
-                  | .value.messages[]
-                  | {
-                      file: $file,
-                      message: .message,
-                      line: .line,
-                      ignorable: .ignorable,
-                      identifier: .identifier
-                    }
-                );
-            (.[0] | errs(.)) as $prErrors
-            | (.[1] | errs(.)) as $targetErrors
-            | $prErrors
-            | map(
-                select(
-                  ($targetErrors | index(.)) == null
-                )
-              )
         run: |
-          jq -s -f <(printf '%s' "$JQ_FILTER") pr-tip-phpstan.json target-branch-phpstan.json > introduced-errors.json
+          jq -s 'def errs($json): $json.files|to_entries|map(.key as $file|.value.messages[]|{file:$file}+{message:.message,line:.line,ignorable:.ignorable,identifier:.identifier}); (.[1]|errs(.)) as $targetErrors | (.[0]|errs(.)) as $prErrors | $targetErrors | map(select(( $prErrors | index(.) ) == null))' pr-tip-phpstan.json target-branch-phpstan.json > introduced-errors.json || true
 
       - name: Generate removed-errors.json
-        shell: bash
-        env:
-          JQ_FILTER: |
-            def errs($json):
-              $json.files
-              | to_entries
-              | map(
-                  .key as $file
-                  | .value.messages[]
-                  | {
-                      file: $file,
-                      message: .message,
-                      line: .line,
-                      ignorable: .ignorable,
-                      identifier: .identifier
-                    }
-                );
-            (.[1] | errs(.)) as $targetErrors
-            | (.[0] | errs(.)) as $prErrors
-            | $targetErrors
-            | map(
-                select(
-                  ($prErrors | index(.)) == null
-                )
-              )
         run: |
-          jq -s -f <(printf '%s' "$JQ_FILTER") pr-tip-phpstan.json target-branch-phpstan.json > removed-errors.json
+          jq -s 'def errs($json): $json.files|to_entries|map(.key as $file|.value.messages[]|{file:$file}+{message:.message,line:.line,ignorable:.ignorable,identifier:.identifier}); (.[0]|errs(.)) as $prErrors | (.[1]|errs(.)) as $targetErrors | $prErrors | map(select(( $targetErrors | index(.) ) == null))' pr-tip-phpstan.json target-branch-phpstan.json > removed-errors.json || true
 
       - name: Show summary of deltas
         run: |
