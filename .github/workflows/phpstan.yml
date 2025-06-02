@@ -107,16 +107,17 @@ jobs:
               obj.files
               | to_entries
               | map(
-                  . as $f
-                  | (
-                      # take this file’s messages and add { file: <path> } to each
-                      $f.value.messages
-                      | map(. + { file: $f.key })
-                    )
-                )
-              | add                      # flatten into one big array of errors
-              | map({ (err_id): . })     # wrap each error as { "<joined-string>": errorObj }
-              | add;                     # merge into one object
+              . as $f
+              | (
+              $f.value.messages
+              | map(. + { file: $f.key })
+              )
+              )
+              | add                 # flatten into one big array of errors (or null if none)
+              | (. // [])           # if null, use empty array
+              | map({ (err_id): . })# wrap each error as { "<joined-string>": errorObj }
+              | add                 # merge into one object (or null if none)
+              | (. // {});          # if null, use empty object
 
             # 3) Extract all keys from a map as a string array:
             def my_keys(m):
@@ -148,15 +149,17 @@ jobs:
               obj.files
               | to_entries
               | map(
-                  . as $f
-                  | (
-                      $f.value.messages
-                      | map(. + { file: $f.key })
-                    )
-                )
-              | add
-              | map({ (err_id): . })
-              | add;
+              . as $f
+              | (
+              $f.value.messages
+              | map(. + { file: $f.key })
+              )
+              )
+              | add                 # flatten into one big array of errors (or null if none)
+              | (. // [])           # if null, use empty array
+              | map({ (err_id): . })# wrap each error as { "<joined-string>": errorObj }
+              | add                 # merge into one object (or null if none)
+              | (. // {});          # if null, use empty object
 
             def my_keys(m):
               m | to_entries | map(.key);
