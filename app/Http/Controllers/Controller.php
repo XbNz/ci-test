@@ -6,6 +6,7 @@ abstract class Controller {
     public function test() {
         // bad formatting
         $this->test2();
+
         
     }
 }
