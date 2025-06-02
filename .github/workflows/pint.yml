@@ -33,7 +33,10 @@ jobs:
       - name: Install Pint
         run: |
           composer global require laravel/pint --no-progress --no-interaction
-          echo "$HOME/.config/composer/vendor/bin" >> $GITHUB_PATH
+          BIN_DIR=$(composer global config bin-dir --absolute)
+          echo "Composer global bin directory is: $BIN_DIR"
+          ls -la "$BIN_DIR"       # Should list `pint` among others
+          echo "$BIN_DIR" >> $GITHUB_PATH
 
       - name: Pint cache directory
         run: |
