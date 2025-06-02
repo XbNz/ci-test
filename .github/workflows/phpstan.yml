@@ -168,47 +168,41 @@ jobs:
         id: build-comment
         run: |
           if [ "$(jq 'length' introduced-errors.json)" -eq 0 ]; then
-            INTRO_TABLE="_No errors found! 🎉_"
+          INTRO_TABLE="_No errors found! 🎉_"
           else
-            INTRO_TABLE=$(
-              {
-                echo "| File | Line | Message |"
-                echo "| ---- | ----: | ------- |"
-                jq -r '
-                  .[]
-                  | "| \((.file // "")|gsub(\"\\|\";\"\\\\|\")) | \(.line) | \(.message|gsub(\"\\|\";\"\\\\|\")) |"
-                ' introduced-errors.json
-              }
-            )
+          INTRO_TABLE=$(
+           {
+             echo "| File | Line | Message |"
+             echo "| ---- | ----: | ------- |"
+             jq -r '.[] | "| " + ((.file // "") | gsub("\\|"; "\\\\|")) + " | " + (.line|tostring) + " | " + ((.message) | gsub("\\|"; "\\\\|")) + " |"' introduced-errors.json
+           }
+          )
           fi
           if [ "$(jq 'length' removed-errors.json)" -eq 0 ]; then
-            REMOVED_TABLE="_No errors found! 🎉_"
+          REMOVED_TABLE="_No errors found!_"
           else
-            REMOVED_TABLE=$(
-              {
-                echo "| File | Line | Message |"
-                echo "| ---- | ----: | ------- |"
-                jq -r '
-                  .[]
-                  | "| \((.file // "")|gsub(\"\\|\";\"\\\\|\")) | \(.line) | \(.message|gsub(\"\\|\";\"\\\\|\")) |"
-                ' removed-errors.json
-              }
-            )
+          REMOVED_TABLE=$(
+           {
+             echo "| File | Line | Message |"
+             echo "| ---- | ----: | ------- |"
+             jq -r '.[] | "| " + ((.file // "") | gsub("\\|"; "\\\\|")) + " | " + (.line|tostring) + " | " + ((.message) | gsub("\\|"; "\\\\|")) + " |"' removed-errors.json
+           }
+          )
           fi
           {
-            echo "<!-- phpstan-comment -->"
-            echo ""
-            echo "# PHPStan Analysis Results"
-            echo ""
-            echo "## ❌ Introduced Errors"
-            echo ""
-            printf "%s\n" "$INTRO_TABLE"
-            echo ""
-            echo "---"
-            echo ""
-            echo "## ✅ Removed Errors"
-            echo ""
-            printf "%s\n" "$REMOVED_TABLE"
+          echo "<!-- phpstan-comment -->"
+          echo ""
+          echo "# PHPStan Analysis Results"
+          echo ""
+          echo "## ❌ Introduced Errors"
+          echo ""
+          printf "%s\n" "$INTRO_TABLE"
+          echo ""
+          echo "---"
+          echo ""
+          echo "## ✅ Removed Errors"
+          echo ""
+          printf "%s\n" "$REMOVED_TABLE"
           } > phpstan-comment.md
           echo "comment-file=phpstan-comment.md" >> $GITHUB_OUTPUT
 
