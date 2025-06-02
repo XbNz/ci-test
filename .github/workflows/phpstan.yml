@@ -95,10 +95,16 @@ jobs:
     steps:
       - name: Generate introduced-errors.json
         run: |
-          jq -s 'def errs($json): $json.files | to_entries | map(.key as $file | .value.messages[] | {file: $file} + {message: .message, line: .line, ignorable: .ignorable, identifier: .identifier}); (.[1] | errs(.)) as $targetErrors | (.[0] | errs(.)) as $prErrors | $prErrors | map(select(( $targetErrors | index(.) ) == null))' <(echo '${{ needs.phpstan.outputs.pr-tip-phpstan-json }}') <(echo '${{ needs.phpstan.outputs.target-branch-phpstan-json }}') > introduced-errors.json || true
+          jq -s 'def errs($json): $json.files|to_entries|map(.key as $file|.value.messages[]|{file:$file}+{message:.message,line:.line,ignorable:.ignorable,identifier:.identifier}); (.[1]|errs(.)) as $targetErrors|(.[0]|errs(.)) as $prErrors|$prErrors|map(select(( $targetErrors|index(.) )==null))' \
+            <(echo '${{ needs.phpstan.outputs.pr-tip-phpstan-json }}') \
+            <(echo '${{ needs.phpstan.outputs.target-branch-phpstan-json }}') \
+            > introduced-errors.json || true
       - name: Generate removed-errors.json
         run: |
-          jq -s 'def errs($json): $json.files | to_entries | map(.key as $file | .value.messages[] | {file: $file} + {message: .message, line: .line, ignorable: .ignorable, identifier: .identifier}); (.[1] | errs(.)) as $targetErrors | (.[0] | errs(.)) as $prErrors | $targetErrors | map(select(( $prErrors | index(.) ) == null))' <(echo '${{ needs.phpstan.outputs.pr-tip-phpstan-json }}') <(echo '${{ needs.phpstan.outputs.target-branch-phpstan-json }}') > removed-errors.json || true
+          jq -s 'def errs($json): $json.files|to_entries|map(.key as $file|.value.messages[]|{file:$file}+{message:.message,line:.line,ignorable:.ignorable,identifier:.identifier}); (.[1]|errs(.)) as $targetErrors|(.[0]|errs(.)) as $prErrors|$targetErrors|map(select(( $prErrors|index(.) )==null))' \
+            <(echo '${{ needs.phpstan.outputs.pr-tip-phpstan-json }}') \
+            <(echo '${{ needs.phpstan.outputs.target-branch-phpstan-json }}') \
+            > removed-errors.json || true
       - name: Show summary of deltas
         run: |
           echo "Introduced files/errors:"
@@ -109,8 +115,8 @@ jobs:
       - name: Build PR comment Markdown
         id: build-comment
         run: |
-          INTRO=$(jq -r 'if length == 0 then "" else . end' introduced-errors.json)
-          REMOVED=$(jq -r 'if length == 0 then "" else . end' removed-errors.json)
+          INTRO=$(jq -r 'if length==0 then "" else . end' introduced-errors.json)
+          REMOVED=$(jq -r 'if length==0 then "" else . end' removed-errors.json)
           build_table() {
             local json_array="$1"
             if [[ "$json_array" == "" ]]; then
@@ -119,7 +125,7 @@ jobs:
             fi
             echo "| File | Line | Message |"
             echo "| ---- | ----: | ------- |"
-            echo "$json_array" | jq -r '.[] | "| \(.file | gsub("\\|"; "\\\\|")) | \(.line) | \(.message | gsub("\\|"; "\\\\|")) |"'
+            echo "$json_array" | jq -r '.[] | "| \(.file|gsub("\\|"; "\\\\|")) | \(.line) | \(.message|gsub("\\|"; "\\\\|")) |"'
           }
           INTRO_TABLE=$(build_table "$INTRO")
           REMOVED_TABLE=$(build_table "$REMOVED")

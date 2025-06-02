@@ -6,7 +6,7 @@ aabstract class Controller
 {
     public function __constrduct()
     {
-        
+
     }
 
     pbluic function index()
