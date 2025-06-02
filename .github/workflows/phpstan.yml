@@ -95,13 +95,13 @@ jobs:
     steps:
       - name: Generate introduced-errors.json
         run: |
-          cat <<EOF | jq -s '
-            # 1) “Hash” each error by joining its four identifying fields:
+          jq -s '
+            # 1) “Hash” each error by joining the four identifying fields:
             def err_id:
               [.message, (.line|tostring), (.ignorable|tostring), .identifier]
               | join("|");
 
-            # 2) Turn “files → messages” into { hash: fullErrorObject } map:
+            # 2) Turn “files → messages” into { hash: fullErrorObject }:
             def to_map(obj):
               obj.files
               | to_entries
@@ -126,17 +126,14 @@ jobs:
             # 6) Keys in pr_map but not in tgt_map → newly introduced errors:
             | [ ( my_keys($pr_map) - my_keys($tgt_map) )[]
                 | $pr_map[.] ]
-          ' > introduced-errors.json
-          # ─── above, we redirect jq’s output into introduced-errors.json ───
-          #
-          # Now feed in the two JSON blobs from the phpstan job:
-          echo '${{ needs.phpstan.outputs.pr-tip-phpstan-json }}'
-          echo '${{ needs.phpstan.outputs.target-branch-phpstan-json }}'
+          '<<EOF > introduced-errors.json
+          ${{ needs.phpstan.outputs.pr-tip-phpstan-json }}
+          ${{ needs.phpstan.outputs.target-branch-phpstan-json }}
           EOF
 
       - name: Generate removed-errors.json
         run: |
-          cat <<EOF | jq -s '
+          jq -s '
             def err_id:
               [.message, (.line|tostring), (.ignorable|tostring), .identifier]
               | join("|");
@@ -161,10 +158,9 @@ jobs:
             # Keys in tgt_map but not in pr_map → errors removed in pr-tip:
             | [ ( my_keys($tgt_map) - my_keys($pr_map) )[]
                 | $tgt_map[.] ]
-          ' > removed-errors.json
-          #
-          echo '${{ needs.phpstan.outputs.pr-tip-phpstan-json }}'
-          echo '${{ needs.phpstan.outputs.target-branch-phpstan-json }}'
+          ' <<EOF > removed-errors.json
+          ${{ needs.phpstan.outputs.pr-tip-phpstan-json }}
+          ${{ needs.phpstan.outputs.target-branch-phpstan-json }}
           EOF
 
       - name: Show summary of deltas
