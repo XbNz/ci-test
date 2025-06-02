@@ -18,8 +18,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.head_ref }}
-
+          ref: ${{ github.event.pull_request.head.ref }}
       - name: Set up Herd Lite (PHP 8.3)
         env:
           TERM: xterm
@@ -71,7 +70,6 @@ jobs:
     steps:
       - name: Generate list of files needing fixes
         run: |
-          echo ${{ needs.pint.outputs.pint-json }}
           jq -r '.files[].name' <<< '${{ needs.pint.outputs.pint-json }}' > files-to-fix.txt
 
       - name: Show summary of Pint fixes
