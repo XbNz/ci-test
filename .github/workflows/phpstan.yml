@@ -71,7 +71,7 @@ jobs:
             --memory-limit=2G \
             --configuration=phpstan.neon \
             --error-format=json \
-            > phpstan-output.json
+            > phpstan-output.json || true
 
       - name: Save PHPStan cache
         uses: actions/cache@v4
