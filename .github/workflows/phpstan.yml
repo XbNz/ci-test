@@ -95,10 +95,10 @@ jobs:
     steps:
       - name: Generate introduced-errors.json
         run: |
-          jq -s 'def errs($j): $j.files|to_entries|map({file:.key}+ .value.messages[])|map(tojson); (.[0]|errs(.)) as $pr | (.[1]|errs(.)) as $base | $pr | map(select(index($base;.)|not))|map(fromjson)' <(echo '${{ needs.phpstan.outputs.pr-tip-phpstan-json }}') <(echo '${{ needs.phpstan.outputs.target-branch-phpstan-json }}') > introduced-errors.json || true
+          jq -s 'def errs($j): $j.files|to_entries|map({file:.key}+ .value.messages[])|map(tojson); (.[0]|errs(.)) as $pr | (.[1]|errs(.)) as $base | $pr | map(select(( $base|index(fromjson(.)))|not))|map(fromjson)' <(echo '${{ needs.phpstan.outputs.pr-tip-phpstan-json }}') <(echo '${{ needs.phpstan.outputs.target-branch-phpstan-json }}') > introduced-errors.json || true
       - name: Generate removed-errors.json
         run: |
-          jq -s 'def errs($j): $j.files|to_entries|map({file:.key}+ .value.messages[])|map(tojson); (.[0]|errs(.)) as $pr | (.[1]|errs(.)) as $base | $base | map(select(index($pr;.)|not))|map(fromjson)' <(echo '${{ needs.phpstan.outputs.pr-tip-phpstan-json }}') <(echo '${{ needs.phpstan.outputs.target-branch-phpstan-json }}') > removed-errors.json || true
+          jq -s 'def errs($j): $j.files|to_entries|map({file:.key}+ .value.messages[])|map(tojson); (.[0]|errs(.)) as $pr | (.[1]|errs(.)) as $base | $base | map(select(( $pr|index(fromjson(.)))|not))|map(fromjson)' <(echo '${{ needs.phpstan.outputs.pr-tip-phpstan-json }}') <(echo '${{ needs.phpstan.outputs.target-branch-phpstan-json }}') > removed-errors.json || true
       - name: Show summary of deltas
         run: |
           echo "Introduced files/errors:"
