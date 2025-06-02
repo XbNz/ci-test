@@ -30,34 +30,26 @@ jobs:
       - name: Add Herd binaries to PATH
         run: echo "$HOME/.config/herd-lite/bin" >> $GITHUB_PATH
 
-      - name: Get Composer cache directory
-        id: composer-cache
+      - name: Install Pint
         run: |
-          echo "directory=$(composer config --absolute cache-files-dir)" >> $GITHUB_OUTPUT
+          composer global require laravel/pint --no-progress --no-interaction
+          echo "$HOME/.config/composer/vendor/bin" >> $GITHUB_PATH
 
-      - name: Restore Composer & vendor cache
+      - name: Restore Pint cache
         uses: actions/cache@v4
         with:
+          key: pint-${{ github.run_id }}
+          restore-keys: pint-
           path: |
-            ${{ steps.composer-cache.outputs.directory }}
-            vendor
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-composer-
-
-      - name: Install dependencies
-        run: |
-          composer install \
-            --prefer-dist \
-            --no-progress \
-            --no-interaction \
-            --no-scripts
+            /tmp/pint-cache.json
 
       - name: Run Laravel Pint with JSON output
         id: run-pint
         run: |
           echo "Running Pint on ${{ github.head_ref }} against base commit ${{ github.event.pull_request.base.sha }}"
-          ./vendor/bin/pint --test --format=json --diff=${{ github.event.pull_request.base.sha }} \
+          pint --test --format=json --diff=${{ github.event.pull_request.base.sha }} \
+            --config=pint.json \
+            --cache-file=/tmp/pint-cache.json \
             > pint-output.json || true
 
       - name: Emit Pint JSON output
