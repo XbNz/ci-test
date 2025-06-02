@@ -72,7 +72,7 @@ jobs:
             --configuration=phpstan.neon \
             --error-format=json \
             > phpstan-output.json || true
-          jq . phpstan-output.json > /dev/null
+          cat phpstan-output.json || true
           echo "json=$(jq -c . < phpstan-output.json)" >> $GITHUB_OUTPUT
 
       - name: Save PHPStan cache
