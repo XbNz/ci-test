@@ -111,6 +111,7 @@ jobs:
           printf '%s' "${{ needs.phpstan.outputs.target-branch-phpstan-json }}" > target-branch-phpstan.json
 
       - name: Generate introduced-errors.json
+        shell: bash
         env:
           JQ_FILTER: |
             def errs($json):
@@ -139,6 +140,7 @@ jobs:
           jq -s -f <(echo "$JQ_FILTER") pr-tip-phpstan.json target-branch-phpstan.json > introduced-errors.json
 
       - name: Generate removed-errors.json
+        shell: bash
         env:
           JQ_FILTER: |
             def errs($json):
