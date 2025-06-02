@@ -209,7 +209,7 @@ jobs:
           # Check if removed-errors.json is empty:
           #
           if [ "$(jq 'length' removed-errors.json)" -eq 0 ]; then
-            REMOVED_TABLE="_No errors found! 🎉_"
+            REMOVED_TABLE="_No errors found!_"
           else
             REMOVED_TABLE=$(
               {
