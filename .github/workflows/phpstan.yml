@@ -96,184 +96,150 @@ jobs:
       - name: Generate introduced-errors.json
         run: |
           jq -s '
-            # 1) Build a unique key per error by joining its 4 identifying fields:
             def err_id:
               [.message, (.line|tostring), (.ignorable|tostring), .identifier]
               | join("|");
-
-            # 2) Turn “files → messages” into a map { key: fullErrorObj },
-            #    and inject the “file” path into each error:
             def to_map(obj):
               obj.files
               | to_entries
               | map(
-              . as $f
-              | (
-              $f.value.messages
-              | map(. + { file: $f.key })
-              )
-              )
-              | add                 # flatten into one big array of errors (or null if none)
-              | (. // [])           # if null, use empty array
-              | map({ (err_id): . })# wrap each error as { "<joined-string>": errorObj }
-              | add                 # merge into one object (or null if none)
-              | (. // {});          # if null, use empty object
-
-            # 3) Extract all keys from a map as a string array:
+                  . as $f
+                  | (
+                      $f.value.messages
+                      | map(. + { file: $f.key })
+                    )
+                )
+              | add
+              | (. // [])
+              | map({ (err_id): . })
+              | add
+              | (. // {});
             def my_keys(m):
               m | to_entries | map(.key);
-
-            # 4) Slurp both JSON inputs into [$pr, $target]:
             . as [$pr, $target]
-
-            # 5) Build two maps (keyed by our “joined-string”):
-            | (to_map($pr))     as $pr_map
+            | (to_map($pr)) as $pr_map
             | (to_map($target)) as $tgt_map
-
-            # 6) Keys in pr_map but not in tgt_map → newly introduced errors:
-            | [ ( my_keys($pr_map) - my_keys($tgt_map) )[]
-                | $pr_map[.] ]
+            | [ (my_keys($pr_map) - my_keys($tgt_map))[] | $pr_map[.] ]
           ' <<EOF > introduced-errors.json
           ${{ needs.phpstan.outputs.pr-tip-phpstan-json }}
           ${{ needs.phpstan.outputs.target-branch-phpstan-json }}
           EOF
 
-      - name: Generate removed-errors.json
-        run: |
-          jq -s '
-            def err_id:
-              [.message, (.line|tostring), (.ignorable|tostring), .identifier]
-              | join("|");
-
-            def to_map(obj):
-              obj.files
-              | to_entries
-              | map(
+  - name: Generate removed-errors.json
+    run: |
+      jq -s '
+        def err_id:
+          [.message, (.line|tostring), (.ignorable|tostring), .identifier]
+          | join("|");
+        def to_map(obj):
+          obj.files
+          | to_entries
+          | map(
               . as $f
               | (
-              $f.value.messages
-              | map(. + { file: $f.key })
-              )
-              )
-              | add                 # flatten into one big array of errors (or null if none)
-              | (. // [])           # if null, use empty array
-              | map({ (err_id): . })# wrap each error as { "<joined-string>": errorObj }
-              | add                 # merge into one object (or null if none)
-              | (. // {});          # if null, use empty object
-
-            def my_keys(m):
-              m | to_entries | map(.key);
-
-            . as [$pr, $target]
-            | (to_map($pr))     as $pr_map
-            | (to_map($target)) as $tgt_map
-
-            # Keys in tgt_map but not in pr_map → removed-in-pr errors:
-            | [ ( my_keys($tgt_map) - my_keys($pr_map) )[]
-                | $tgt_map[.] ]
-          ' <<EOF > removed-errors.json
-          ${{ needs.phpstan.outputs.pr-tip-phpstan-json }}
-          ${{ needs.phpstan.outputs.target-branch-phpstan-json }}
-          EOF
-
-      - name: Show summary of deltas
-        run: |
-          echo "Introduced files/errors:"
-          jq . introduced-errors.json || true
-          echo
-          echo "Removed files/errors:"
-          jq . removed-errors.json || true
-
-      - name: Build PR comment Markdown
-        id: build-comment
-        run: |
-          cat introduced-errors.json
-          cat removed-errors.json
-          #
-          # Check if introduced-errors.json is empty:
-          #
-          if [ "$(jq 'length' introduced-errors.json)" -eq 0 ]; then
-            INTRO_TABLE="_No errors found! 🎉_"
-          else
-            # Produce Markdown rows directly from introduced-errors.json
-            INTRO_TABLE=$(
-              {
-                echo "| File | Line | Message |"
-                echo "| ---- | ----: | ------- |"
-                jq -r '
-                  .[]
-                  | "| \(.file|gsub("\\|";"\\\\|")) | \(.line) | \(.message|gsub("\\|";"\\\\|")) |"
-                ' introduced-errors.json
-              }
+                  $f.value.messages
+                  | map(. + { file: $f.key })
+                )
             )
-          fi
+          | add
+          | (. // [])
+          | map({ (err_id): . })
+          | add
+          | (. // {});
+        def my_keys(m):
+          m | to_entries | map(.key);
+        . as [$pr, $target]
+        | (to_map($pr)) as $pr_map
+        | (to_map($target)) as $tgt_map
+        | [ (my_keys($tgt_map) - my_keys($pr_map))[] | $tgt_map[.] ]
+      ' <<EOF > removed-errors.json
+        ${{ needs.phpstan.outputs.pr-tip-phpstan-json }}
+        ${{ needs.phpstan.outputs.target-branch-phpstan-json }}
+        EOF
 
-          #
-          # Check if removed-errors.json is empty:
-          #
-          if [ "$(jq 'length' removed-errors.json)" -eq 0 ]; then
-            REMOVED_TABLE="_No errors found!_"
-          else
-            REMOVED_TABLE=$(
-              {
-                echo "| File | Line | Message |"
-                echo "| ---- | ----: | ------- |"
-                jq -r '
-                  .[]
-                  | "| \(.file|gsub("\\|";"\\\\|")) | \(.line) | \(.message|gsub("\\|";"\\\\|")) |"
-                ' removed-errors.json
-              }
-            )
-          fi
+  - name: Show summary of deltas
+    run: |
+      echo "Introduced files/errors:"
+      jq . introduced-errors.json || true
+      echo
+      echo "Removed files/errors:"
+      jq . removed-errors.json || true
 
-          #
-          # Write out the comment body in markdown:
-          #
+  - name: Build PR comment Markdown
+    id: build-comment
+    run: |
+      if [ "$(jq 'length' introduced-errors.json)" -eq 0 ]; then
+        INTRO_TABLE="_No errors found! 🎉_"
+      else
+        INTRO_TABLE=$(
           {
-            echo "<!-- phpstan-comment -->"
-            echo ""
-            echo "# PHPStan Analysis Results"
-            echo ""
-            echo "## ❌ Introduced Errors"
-            echo ""
-            printf "%s\n" "$INTRO_TABLE"
-            echo ""
-            echo "---"
-            echo ""
-            echo "## ✅ Removed Errors"
-            echo ""
-            printf "%s\n" "$REMOVED_TABLE"
-          } > phpstan-comment.md
+            echo "| File | Line | Message |"
+            echo "| ---- | ----: | ------- |"
+            jq -r '
+              .[]
+              | "| \((.file // "")|gsub(\"\\|\";\"\\\\|\")) | \(.line) | \(.message|gsub(\"\\|\";\"\\\\|\")) |"
+            ' introduced-errors.json
+          }
+        )
+      fi
+      if [ "$(jq 'length' removed-errors.json)" -eq 0 ]; then
+        REMOVED_TABLE="_No errors found! 🎉_"
+      else
+        REMOVED_TABLE=$(
+          {
+            echo "| File | Line | Message |"
+            echo "| ---- | ----: | ------- |"
+            jq -r '
+              .[]
+              | "| \((.file // "")|gsub(\"\\|\";\"\\\\|\")) | \(.line) | \(.message|gsub(\"\\|\";\"\\\\|\")) |"
+            ' removed-errors.json
+          }
+        )
+      fi
+      {
+        echo "<!-- phpstan-comment -->"
+        echo ""
+        echo "# PHPStan Analysis Results"
+        echo ""
+        echo "## ❌ Introduced Errors"
+        echo ""
+        printf "%s\n" "$INTRO_TABLE"
+        echo ""
+        echo "---"
+        echo ""
+        echo "## ✅ Removed Errors"
+        echo ""
+        printf "%s\n" "$REMOVED_TABLE"
+      } > phpstan-comment.md
+      echo "comment-file=phpstan-comment.md" >> $GITHUB_OUTPUT
 
-          echo "comment-file=phpstan-comment.md" >> $GITHUB_OUTPUT
-
-      - name: Create or update PHPStan comment
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const fs = require('fs');
-            const body = fs.readFileSync('phpstan-comment.md', 'utf8');
-            const { data: comments } = await github.rest.issues.listComments({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-              per_page: 100
-            });
-            const marker = '<!-- phpstan-comment -->';
-            const existing = comments.find(c => c.body.includes(marker));
-            if (existing) {
-              await github.rest.issues.updateComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                comment_id: existing.id,
-                body: body
-              });
-            } else {
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: context.issue.number,
-                body: body
-              });
-            }
+  - name: Create or update PHPStan comment
+    uses: actions/github-script@v7
+    with:
+      github-token: ${{ secrets.GITHUB_TOKEN }}
+      script: |
+        const fs = require('fs');
+        const body = fs.readFileSync('phpstan-comment.md', 'utf8');
+        const { data: comments } = await github.rest.issues.listComments({
+          owner: context.repo.owner,
+          repo: context.repo.repo,
+          issue_number: context.issue.number,
+          per_page: 100
+        });
+        const marker = '<!-- phpstan-comment -->';
+        const existing = comments.find(c => c.body.includes(marker));
+        if (existing) {
+          await github.rest.issues.updateComment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            comment_id: existing.id,
+            body: body
+          });
+        } else {
+          await github.rest.issues.createComment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: context.issue.number,
+            body: body
+          });
+        }
