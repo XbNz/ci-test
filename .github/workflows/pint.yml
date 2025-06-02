@@ -56,7 +56,7 @@ jobs:
       - name: Run Laravel Pint with JSON output
         id: run-pint
         run: |
-          ./vendor/bin/pint --test --format=json --diff=${{ github.event.pull_request.base.ref }} \
+          ./vendor/bin/pint --test --format=json --diff=${{ github.event.pull_request.base.sha }} \
             > pint-output.json || true
 
       - name: Emit Pint JSON output
