@@ -7,6 +7,5 @@ abstract class Controller {
         // bad formatting
         $this->test2();
 
-        
     }
 }
