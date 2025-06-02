@@ -96,40 +96,46 @@ jobs:
       - name: Generate introduced-errors.json
         run: |
           jq -s '
-            # 1) “Hash” each error by joining the four identifying fields:
+            # 1) Build a unique key per error by joining its 4 identifying fields:
             def err_id:
               [.message, (.line|tostring), (.ignorable|tostring), .identifier]
               | join("|");
 
-            # 2) Turn “files → messages” into { hash: fullErrorObject }:
+            # 2) Turn “files → messages” into a map { key: fullErrorObj },
+            #    and inject the “file” path into each error:
             def to_map(obj):
               obj.files
               | to_entries
-              | map(.value.messages)    # collect every "messages" array
-              | add                     # flatten into one big array
-              | map({ (err_id): . })    # key each error by that joined string
-              | add;                    # merge into one object
+              | map(
+                  . as $f
+                  | (
+                      # take this file’s messages and add { file: <path> } to each
+                      $f.value.messages
+                      | map(. + { file: $f.key })
+                    )
+                )
+              | add                      # flatten into one big array of errors
+              | map({ (err_id): . })     # wrap each error as { "<joined-string>": errorObj }
+              | add;                     # merge into one object
 
-            # 3) Extract all keys from a map as a list of strings:
+            # 3) Extract all keys from a map as a string array:
             def my_keys(m):
-              m
-              | to_entries
-              | map(.key);
+              m | to_entries | map(.key);
 
-            # 4) Slurp the two JSON inputs into [$pr, $target]:
+            # 4) Slurp both JSON inputs into [$pr, $target]:
             . as [$pr, $target]
 
-            # 5) Build two maps keyed by our string “hash”:
+            # 5) Build two maps (keyed by our “joined-string”):
             | (to_map($pr))     as $pr_map
             | (to_map($target)) as $tgt_map
 
             # 6) Keys in pr_map but not in tgt_map → newly introduced errors:
             | [ ( my_keys($pr_map) - my_keys($tgt_map) )[]
                 | $pr_map[.] ]
-          '<<EOF > introduced-errors.json
-          ${{ needs.phpstan.outputs.pr-tip-phpstan-json }}
-          ${{ needs.phpstan.outputs.target-branch-phpstan-json }}
-          EOF
+          ' <<EOF > introduced-errors.json
+            ${{ needs.phpstan.outputs.pr-tip-phpstan-json }}
+            ${{ needs.phpstan.outputs.target-branch-phpstan-json }}
+            EOF
 
       - name: Generate removed-errors.json
         run: |
@@ -141,27 +147,31 @@ jobs:
             def to_map(obj):
               obj.files
               | to_entries
-              | map(.value.messages)
+              | map(
+                  . as $f
+                  | (
+                      $f.value.messages
+                      | map(. + { file: $f.key })
+                    )
+                )
               | add
               | map({ (err_id): . })
               | add;
 
             def my_keys(m):
-              m
-              | to_entries
-              | map(.key);
+              m | to_entries | map(.key);
 
             . as [$pr, $target]
             | (to_map($pr))     as $pr_map
             | (to_map($target)) as $tgt_map
 
-            # Keys in tgt_map but not in pr_map → errors removed in pr-tip:
+            # Keys in tgt_map but not in pr_map → removed-in-pr errors:
             | [ ( my_keys($tgt_map) - my_keys($pr_map) )[]
                 | $tgt_map[.] ]
           ' <<EOF > removed-errors.json
-          ${{ needs.phpstan.outputs.pr-tip-phpstan-json }}
-          ${{ needs.phpstan.outputs.target-branch-phpstan-json }}
-          EOF
+            ${{ needs.phpstan.outputs.pr-tip-phpstan-json }}
+            ${{ needs.phpstan.outputs.target-branch-phpstan-json }}
+            EOF
 
       - name: Show summary of deltas
         run: |
