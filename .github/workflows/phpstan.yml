@@ -116,12 +116,52 @@ jobs:
 
       - name: Generate introduced-errors.json
         run: |
-          printf 'def errs($json):\n  $json.files\n    | to_entries\n    | map(\n        .key as $file\n        | .value.messages[]\n        | { file: $file } + { message: .message, line: .line, ignorable: .ignorable, identifier: .identifier }\n      );\n\n(.[0] | errs(.)) as $prErrors\n| (.[1] | errs(.)) as $targetErrors\n| $prErrors\n| map(\n    select(\n      ($targetErrors | index(.)) == null\n    )\n  )' > /tmp/introduced-filter.jq
+          cat << 'EOF' > /tmp/introduced-filter.jq
+          def errs($json):
+              $json.files
+                | to_entries
+                | map(
+                    .key as $file
+                    | .value.messages[]
+                    | { file: $file }
+                      + { message: .message, line: .line, ignorable: .ignorable, identifier: .identifier }
+                  );
+
+          (.[0] | errs(.)) as $prErrors
+          | (.[1] | errs(.)) as $targetErrors
+          | $prErrors
+          | map(
+              select(
+                ($targetErrors | index(.)) == null
+              )
+            )
+          EOF
+
           jq -s -f /tmp/introduced-filter.jq pr-tip-phpstan.json target-branch-phpstan.json > introduced-errors.json
 
       - name: Generate removed-errors.json
         run: |
-          printf 'def errs($json):\n  $json.files\n    | to_entries\n    | map(\n        .key as $file\n        | .value.messages[]\n        | { file: $file } + { message: .message, line: .line, ignorable: .ignorable, identifier: .identifier }\n      );\n\n(.[1] | errs(.)) as $targetErrors\n| (.[0] | errs(.)) as $prErrors\n| $targetErrors\n| map(\n    select(\n      ($prErrors | index(.)) == null\n    )\n  )' > /tmp/removed-filter.jq
+          cat << 'EOF' > /tmp/removed-filter.jq
+          def errs($json):
+              $json.files
+                | to_entries
+                | map(
+                    .key as $file
+                    | .value.messages[]
+                    | { file: $file }
+                      + { message: .message, line: .line, ignorable: .ignorable, identifier: .identifier }
+                  );
+
+          (.[1] | errs(.)) as $targetErrors
+          | (.[0] | errs(.)) as $prErrors
+          | $targetErrors
+          | map(
+              select(
+                ($prErrors | index(.)) == null
+              )
+            )
+          EOF
+
           jq -s -f /tmp/removed-filter.jq pr-tip-phpstan.json target-branch-phpstan.json > removed-errors.json
 
       - name: Show summary of deltas
