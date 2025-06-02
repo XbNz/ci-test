@@ -174,24 +174,46 @@ jobs:
       - name: Build PR comment Markdown
         id: build-comment
         run: |
-          INTRO=$(jq -r 'if length==0 then "" else . end' introduced-errors.json)
-          REMOVED=$(jq -r 'if length==0 then "" else . end' removed-errors.json)
+          #
+          # Check if introduced-errors.json is empty:
+          #
+          if [ "$(jq 'length' introduced-errors.json)" -eq 0 ]; then
+            INTRO_TABLE="_No errors found! 🎉_"
+          else
+            # Produce Markdown rows directly from introduced-errors.json
+            INTRO_TABLE=$(
+              {
+                echo "| File | Line | Message |"
+                echo "| ---- | ----: | ------- |"
+                jq -r '
+                  .[]
+                  | "| \(.file|gsub("\\|";"\\\\|")) | \(.line) | \(.message|gsub("\\|";"\\\\|")) |"
+                ' introduced-errors.json
+              }
+            )
+          fi
 
-          build_table() {
-            local json_array="$1"
-            if [[ "$json_array" == "" ]]; then
-              echo "_No errors found! 🎉_"
-              return
-            fi
-            echo "| File | Line | Message |"
-            echo "| ---- | ----: | ------- |"
-            echo "$json_array" \
-              | jq -r '.[] | "| \(.file|gsub(\"\\|\";\"\\\\|\")) | \(.line) | \(.message|gsub(\"\\|\";\"\\\\|\")) |"'
-          }
+          #
+          # Check if removed-errors.json is empty:
+          #
+          if [ "$(jq 'length' removed-errors.json)" -eq 0 ]; then
+            REMOVED_TABLE="_No errors found! 🎉_"
+          else
+            REMOVED_TABLE=$(
+              {
+                echo "| File | Line | Message |"
+                echo "| ---- | ----: | ------- |"
+                jq -r '
+                  .[]
+                  | "| \(.file|gsub("\\|";"\\\\|")) | \(.line) | \(.message|gsub("\\|";"\\\\|")) |"
+                ' removed-errors.json
+              }
+            )
+          fi
 
-          INTRO_TABLE=$(build_table "$INTRO")
-          REMOVED_TABLE=$(build_table "$REMOVED")
-
+          #
+          # Write out the comment body in markdown:
+          #
           {
             echo "<!-- phpstan-comment -->"
             echo ""
