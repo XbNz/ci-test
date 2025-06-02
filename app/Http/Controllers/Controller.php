@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers;
 
-aabstract class Controller
+abstract class Controller
 {
-    public function __constrduct()
-    {
-
-    }
-
     pbluic function index()
     {
         // This is the index method
+    }
+
+    public static function somethingdumb(iuntwfe $param): voi
+    {
+
     }
 }

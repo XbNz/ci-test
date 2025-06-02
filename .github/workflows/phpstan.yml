@@ -95,10 +95,78 @@ jobs:
     steps:
       - name: Generate introduced-errors.json
         run: |
-          jq -s 'def errs($j): $j.files|to_entries|map({file:.key}+ .value.messages[]); (.[0]|errs(.)) as $pr|(.[1]|errs(.)) as $base| $pr|map(select(any($base[]; . == .)|not))' <(echo '${{ needs.phpstan.outputs.pr-tip-phpstan-json }}') <(echo '${{ needs.phpstan.outputs.target-branch-phpstan-json }}') > introduced-errors.json || true
+          cat <<EOF | jq -s '
+            # 1) “Hash” each error by joining its four identifying fields:
+            def err_id:
+              [.message, (.line|tostring), (.ignorable|tostring), .identifier]
+              | join("|");
+
+            # 2) Turn “files → messages” into { hash: fullErrorObject } map:
+            def to_map(obj):
+              obj.files
+              | to_entries
+              | map(.value.messages)    # collect every "messages" array
+              | add                     # flatten into one big array
+              | map({ (err_id): . })    # key each error by that joined string
+              | add;                    # merge into one object
+
+            # 3) Extract all keys from a map as a list of strings:
+            def my_keys(m):
+              m
+              | to_entries
+              | map(.key);
+
+            # 4) Slurp the two JSON inputs into [$pr, $target]:
+            . as [$pr, $target]
+
+            # 5) Build two maps keyed by our string “hash”:
+            | (to_map($pr))     as $pr_map
+            | (to_map($target)) as $tgt_map
+
+            # 6) Keys in pr_map but not in tgt_map → newly introduced errors:
+            | [ ( my_keys($pr_map) - my_keys($tgt_map) )[]
+                | $pr_map[.] ]
+          ' > introduced-errors.json
+          # ─── above, we redirect jq’s output into introduced-errors.json ───
+          #
+          # Now feed in the two JSON blobs from the phpstan job:
+          echo '${{ needs.phpstan.outputs.pr-tip-phpstan-json }}'
+          echo '${{ needs.phpstan.outputs.target-branch-phpstan-json }}'
+          EOF
+
       - name: Generate removed-errors.json
         run: |
-          jq -s 'def errs($j): $j.files|to_entries|map({file:.key}+ .value.messages[]); (.[0]|errs(.)) as $pr|(.[1]|errs(.)) as $base| $base|map(select(any($pr[]; . == .)|not))' <(echo '${{ needs.phpstan.outputs.pr-tip-phpstan-json }}') <(echo '${{ needs.phpstan.outputs.target-branch-phpstan-json }}') > removed-errors.json || true
+          cat <<EOF | jq -s '
+            def err_id:
+              [.message, (.line|tostring), (.ignorable|tostring), .identifier]
+              | join("|");
+
+            def to_map(obj):
+              obj.files
+              | to_entries
+              | map(.value.messages)
+              | add
+              | map({ (err_id): . })
+              | add;
+
+            def my_keys(m):
+              m
+              | to_entries
+              | map(.key);
+
+            . as [$pr, $target]
+            | (to_map($pr))     as $pr_map
+            | (to_map($target)) as $tgt_map
+
+            # Keys in tgt_map but not in pr_map → errors removed in pr-tip:
+            | [ ( my_keys($tgt_map) - my_keys($pr_map) )[]
+                | $tgt_map[.] ]
+          ' > removed-errors.json
+          #
+          echo '${{ needs.phpstan.outputs.pr-tip-phpstan-json }}'
+          echo '${{ needs.phpstan.outputs.target-branch-phpstan-json }}'
+          EOF
+
       - name: Show summary of deltas
         run: |
           echo "Introduced files/errors:"
@@ -106,11 +174,13 @@ jobs:
           echo
           echo "Removed files/errors:"
           jq . removed-errors.json || true
+
       - name: Build PR comment Markdown
         id: build-comment
         run: |
           INTRO=$(jq -r 'if length==0 then "" else . end' introduced-errors.json)
           REMOVED=$(jq -r 'if length==0 then "" else . end' removed-errors.json)
+
           build_table() {
             local json_array="$1"
             if [[ "$json_array" == "" ]]; then
@@ -121,8 +191,10 @@ jobs:
             echo "| ---- | ----: | ------- |"
             echo "$json_array" | jq -r '.[] | "| \(.file|gsub(\"\\|\";\"\\\\|\")) | \(.line) | \(.message|gsub(\"\\|\";\"\\\\|\")) |"'
           }
+
           INTRO_TABLE=$(build_table "$INTRO")
           REMOVED_TABLE=$(build_table "$REMOVED")
+
           {
             echo "<!-- phpstan-comment -->"
             echo ""
@@ -138,7 +210,9 @@ jobs:
             echo ""
             printf "%s\n" "$REMOVED_TABLE"
           } > phpstan-comment.md
+
           echo "comment-file=phpstan-comment.md" >> $GITHUB_OUTPUT
+
       - name: Create or update PHPStan comment
         uses: actions/github-script@v7
         with:
