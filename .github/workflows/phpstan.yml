@@ -86,39 +86,38 @@ jobs:
         id: emit-pr-tip-json
         if: ${{ matrix.name == 'pr-tip' }}
         run: |
-          echo "pr-tip-json<<EOF" >> $GITHUB_OUTPUT
-          echo "${{ steps.run-phpstan.outputs.json }}" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          echo "pr-tip-json=$(jq -c . < phpstan-output.json)" >> $GITHUB_OUTPUT
 
       - name: Emit target-branch output
         id: emit-target-json
         if: ${{ matrix.name == 'target-branch' }}
         run: |
-          echo "target-branch-json<<EOF" >> $GITHUB_OUTPUT
-          echo "${{ steps.run-phpstan.outputs.json }}" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          echo "target-branch-json=$(jq -c . < phpstan-output.json)" >> $GITHUB_OUTPUT
 
   compare-results:
     needs: phpstan
     runs-on: ubuntu-latest
     steps:
-      - name: Reconstruct “pr-tip” JSON file
-        run: |
-          printf '%s' "${{ needs.phpstan.outputs.pr-tip-phpstan-json }}" > pr-tip-phpstan.json
-
-      - name: Reconstruct “target-branch” JSON file
-        run: |
-          printf '%s' "${{ needs.phpstan.outputs.target-branch-phpstan-json }}" > target-branch-phpstan.json
-
       - name: Generate introduced-errors.json
         run: |
           cat pr-tip-phpstan.json || true
-          jq -s 'def errs($json): $json.files|to_entries|map(.key as $file|.value.messages[]|{file:$file}+{message:.message,line:.line,ignorable:.ignorable,identifier:.identifier}); (.[1]|errs(.)) as $targetErrors | (.[0]|errs(.)) as $prErrors | $targetErrors | map(select(( $prErrors | index(.) ) == null))' pr-tip-phpstan.json target-branch-phpstan.json > introduced-errors.json || true
+          jq -s 'def errs($json): $json.files|to_entries|map(.key as $file|.value.messages[]|{file:$file}+{message:.message,line:.line,ignorable:.ignorable,identifier:.identifier}); (.[1]|errs(.)) as $targetErrors | (.[0]|errs(.)) as $prErrors | $targetErrors | map(select(( $prErrors | index(.) ) == null))' \
+            <(echo "${{ needs.phpstan.outputs.pr-tip-phpstan-json }}") \
+            <(echo "${{ needs.phpstan.outputs.target-branch-phpstan-json }}") \
+            > introduced-errors.json || true
 
-#      - name: Show summary of deltas
-#        run: |
-#          echo "Introduced files/errors:"
-#          jq . introduced-errors.json || true
-#          echo
-#          echo "Removed files/errors:"
-#          jq . removed-errors.json || true
+      - name: Generate removed-errors.json
+        run: |
+          cat pr-tip-phpstan.json || true
+          jq -s 'def errs($json): $json.files|to_entries|map(.key as $file|.value.messages[]|{file:$file}+{message:.message,line:.line,ignorable:.ignorable,identifier:.identifier}); (.[1]|errs(.)) as $targetErrors | (.[0]|errs(.)) as $prErrors | $prErrors | map(select(( $targetErrors | index(.) ) == null))' \
+            <(echo "${{ needs.phpstan.outputs.pr-tip-phpstan-json }}") \
+            <(echo "${{ needs.phpstan.outputs.target-branch-phpstan-json }}") \
+            > removed-errors.json || true
+
+      - name: Show summary of deltas
+        run: |
+          echo "Introduced files/errors:"
+          jq . introduced-errors.json || true
+          echo
+          echo "Removed files/errors:"
+          jq . removed-errors.json || true
