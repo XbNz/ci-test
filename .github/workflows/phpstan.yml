@@ -105,70 +105,76 @@ jobs:
       - name: Reconstruct “pr-tip” JSON file
         run: |
           printf '%s' "${{ needs.phpstan.outputs.pr-tip-phpstan-json }}" > pr-tip-phpstan.json
-  
+
       - name: Reconstruct “target-branch” JSON file
         run: |
           printf '%s' "${{ needs.phpstan.outputs.target-branch-phpstan-json }}" > target-branch-phpstan.json
 
       - name: Generate introduced-errors.json
-        env:
-          JQ_FILTER: |
-            def errs($json):
-              $json.files
-              | to_entries
-              | map(
-                  .key as $file
-                  | .value.messages[]
-                  | {
-                      file: $file,
-                      message: .message,
-                      line: .line,
-                      ignorable: .ignorable,
-                      identifier: .identifier
-                    }
-                );
-            (.[0] | errs(.)) as $prErrors
-            | (.[1] | errs(.)) as $targetErrors
-            | $prErrors
-            | map(
-                select(
-                  ($targetErrors | index(.)) == null
-                )
-              )
         shell: bash
         run: |
-          echo "$JQ_FILTER" > jq-filter-introduced.jq
-          jq -s -f jq-filter-introduced.jq pr-tip-phpstan.json target-branch-phpstan.json > introduced-errors.json
+          cat > introduced.jq <<'JQ'
+          def errs($json):
+            $json.files
+            | to_entries
+            | map(
+                .key as $file
+                | .value.messages[]
+                | {
+                    file: $file,
+                    message: .message,
+                    line: .line,
+                    ignorable: .ignorable,
+                    identifier: .identifier
+                  }
+              );
+
+          (.[0] | errs(.)) as $prErrors
+          | (.[1] | errs(.)) as $targetErrors
+          | $prErrors
+          | map(
+              select(
+                ($targetErrors | index(.)) == null
+              )
+            )
+          JQ
+
+          jq -s -f introduced.jq \
+             pr-tip-phpstan.json target-branch-phpstan.json \
+             > introduced-errors.json
 
       - name: Generate removed-errors.json
-        env:
-          JQ_FILTER: |
-            def errs($json):
-              $json.files
-              | to_entries
-              | map(
-                  .key as $file
-                  | .value.messages[]
-                  | {
-                      file: $file,
-                      message: .message,
-                      line: .line,
-                      ignorable: .ignorable,
-                      identifier: .identifier
-                    }
-                );
-            (.[1] | errs(.)) as $targetErrors
-            | (.[0] | errs(.)) as $prErrors
-            | $targetErrors
-            | map(
-                select(
-                  ($prErrors | index(.)) == null
-                )
-              )
         shell: bash
         run: |
-          echo "$JQ_FILTER" > jq-filter-removed.jq
-          jq -s -f jq-filter-removed.jq pr-tip-phpstan.json target-branch-phpstan.json > removed-errors.json
+          cat > removed.jq <<'JQ'
+          def errs($json):
+            $json.files
+            | to_entries
+            | map(
+                .key as $file
+                | .value.messages[]
+                | {
+                    file: $file,
+                    message: .message,
+                    line: .line,
+                    ignorable: .ignorable,
+                    identifier: .identifier
+                  }
+              );
+
+          (.[1] | errs(.)) as $targetErrors
+          | (.[0] | errs(.)) as $prErrors
+          | $targetErrors
+          | map(
+              select(
+                ($prErrors | index(.)) == null
+              )
+            )
+          JQ
+
+          jq -s -f removed.jq \
+             pr-tip-phpstan.json target-branch-phpstan.json \
+             > removed-errors.json
 
       - name: Show summary of deltas
         run: |
