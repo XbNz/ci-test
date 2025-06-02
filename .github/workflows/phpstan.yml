@@ -185,7 +185,7 @@ jobs:
             fi
             echo "| File | Line | Message |"
             echo "| ---- | ----: | ------- |"
-            echo "$json_array" | jq -r '.[] | "| \(.file|gsub(\"\\|\";\"\\\\|\")) | \(.line) | \(.message|gsub(\"\\|\";\"\\\\|\")) |"'
+            echo "$json_array" | jq -r '.[] | "| \(.file | gsub("\\|"; "\\\\|")) | \(.line) | \(.message | gsub("\\|"; "\\\\|")) |"'
           }
 
           INTRO_TABLE=$(build_table "$INTRO")
